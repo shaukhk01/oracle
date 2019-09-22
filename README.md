@@ -1,0 +1,2 @@
+# oracle
+sql_notes
