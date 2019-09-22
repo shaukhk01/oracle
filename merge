@@ -1,0 +1,34 @@
+MERGE
+=====>
+Merge is a dml statement introduce in oracle 9i merge statement is used to transfer data from
+source table into target table when both table structure are same.
+Generally merge statement used in datawarehousing applications
+Merge statement is also called as upsert statement because in merge statement we are using update,insert
+command conditionally 
+
+SYNTAX:
+merge into targettablename using sourcetablename on(join condition)when matched then update set targettablecolumnname1=sourcetabecolumnname1,.......when not matched then insert(targettablecolumnnames)values(sourcetablecolumnnames);
+
+sql>select * from dept;(target table)
+sql>create table depts as select * from dept;
+sql>insert into depts values(1,'a','b');
+sql>select * from depts;
+
+sql>merge into dept d using depts s on(d.deptno=s.deptno)when matched then update set d.dname=s.dname,d.loc=s.loc when not matched then insert(d.deptno,d.dname,d.loc)values(s.deptno,s.dname,s.loc);
+sql>select * from dept;
+
+note:
+THrough the merge statement we can not update on clause column [on clause==joing condition]
+note:
+oracle 10G onwards we can also used delete statement witin merge command this delete statement must be used.
+along with update statement by using following SYNTAX
+
+systax:
+
+delete where condition
+
+whenever we are using this delete statement then oracle server automatically delete target table data.
+example:
+sql>MERGE into dept d using depts s on(d.deptno=s.deptno)when matched then update set d.dname=s.dname,d.loc=s.loc delete where loc='DALLAS' when not matched then insert (d.deptno,d.dname,d.loc)values(s.deptno,s.dname,s.loc);
+
+sql>select * from dept;

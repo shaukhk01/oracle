@@ -1,0 +1,283 @@
+                                     INDEX
+                                     =====
+Index is a database object which is used to retrieve very fastly from database that's why indexes are used, to improve performance of application Generally index are created are table column 
+
+In oracle we are creating index in two ways
+
+1:Automatically
+2:Manually
+
+Automatically:
+==============
+In oracle whenever we are creating primary key  or unique constrant then oracle server internally automatica-lly creates B-tree Index on those column.
+
+Manually:
+=========
+In oracle we can also create indexes manually by using following syntax:
+
+syntax:
+=======
+
+create index indexname on tablename(columnname);
+
+In oracle whenever we are creating index on the table column then oracle server automatically stores those,
+column value in ascending order seprately in index entries Whenever we are requesting data by using indexed
+column then oracle server very fastly retrieve data from index entries.
+By using index scan mechanism.
+
+note1:
+In all relational databases whenever we are requesting data by using where clause or by using order by 
+clause then only database server searching for indexes
+
+note2:
+In oracle whenever where clause having <> or is null or is not null operator then oracle server does not
+search for indexes if those column having indexes also.
+
+Oracle having two types of indexes these are 
+
+1:B-tree indexes :
+2:Bitmap indexes :
+
+Btree indexes  :
+================
+
+In oracle by default indexes are B-tree indexes
+
+Syntax:-
+
+Create index indexname on tablename(columnname);
+
+In oracle whevever we are creating b-tree index then oracle server automatically creates tree structure,
+base on index column value in this tree structure always leaf blocks stores actual data along with rowids.
+
+Whenever user requesting data by using where clause or order by clause then oracle server first check those,
+where clause or order by clause columns  having indexes or not.
+
+Whenever those column having b-tree indexes then oracle server very fastly retrieve data from leaf blocks.
+within b-tree structure By using index scan mechanism 
+
+EXAMPLE:
+
+                                      DBA           
+        sql>create index ini on emp(empno);
+                             +----------------------+
+                             |  data dictionary     |
+                             |+--------------------+|
+                             ||emp ini   normal    ||
+                             ||                    ||
+                             |+--------------------+|
+                             +----------------------+
+
+In oracle all indexes information store under user_indexes data dictionary 
+Example:
+
+sql>create index in1 on emp(ename);
+sql>desc user_indexes;
+sql>select index_name,index_type from user_indexes where table_name='EMP';
+
+| INDEX_NAME | INDEX_TYPE |
+|------------+------------|
+| PK_EMP     | NORMAL     |
+|------------+------------|
+| IN1        | NORMAL     |
+
+note:
+*In oralce if you want to view column name along with index names then we are using user_ind_columns data 
+dictionary.
+
+Example:
+sql>desc user_ind_columns;
+sql>select column_name,index_name from user_ind_columns where table_name='EMP';
+
+| COLUMN_NAME | INDEX_NAME |
+|-------------+------------|
+| EMPNO       | PK_EMP     |
+| ENAME       | IN1        |
+
+
+Find out whether a query searching for indexes or not:
+=======================================================
+In oracle whenever we are submitting any query into the oracle server then oracle server internally,
+automatically creates plan table bases on internal queries execution process if you want to view those,
+Execution process plan table and also query result then we are using following syntax.
+
+SYNTAX:
+=======
+sql>set autotrace on explain;
+
+After identifying query execution process then we must off tracing query.
+
+SYNTAX:
+=======
+sql>set autotrace on off;
+
+EXAMPLE:(without using indexes)
+-----------------------------
+sql>set autotrace on explain;
+sql>select * from emp where ename='FORD';
+
+EXAMPLE:(with using indexes):
+-----------------------------
+sql>create index in1 on emp(ename);
+sql>select * from emp where ename='FORD';
+sql>set autotrace on off;
+
+FUNCTION BASED INDEX:
+======================
+Oracle 8i introduced function based index by default function based index is a B-Tree index.
+Generally whenever where clause having function or expression then oracle server does not search for indexs
+If those columns already having indexes also to over come this problem oracle 8i introduced extension of,
+the B-Tree indexes called function based indexes which is used to create indexes of columns along with,
+functions 
+
+SYNTAX:
+-------
+create index indexname on tablename (function name (columnname))
+                                          |
+                                          +-(stored expression)
+
+
+EXAMPLE:(without using function based index)
+---------------------------------------------
+
+sql>set autotrace on explain;
+sql>select * from emp where upper(ename)='FORD';
+
+EXAMPLE:(with using function based index):
+------------------------------------------
+
+sql>create index in2 on emp(upper(ename));
+sql>select * from emp where upper(ename)='FORD';
+
+sql>set autotrace off
+
+sql>desc user_indexes;
+sql>select index_name,index_type from user_indexes where table_name='EMP';
+
+| INDEX_NAME | INDEX_TYPE            |
+|------------+-----------------------|
+| IN2        | FUNCTION-BASED NORMAL |
+
+
+Virtual Column:
+===============
+Oracle 11g introduce virtual column in a table generally prior to oracle,
+11g data base adminstrator only stores stored expression in oracle database indirectly by using FUNCTION-bas-ed indexes,views where as oracle 11g we can also stores stored expression directly in oracle database.
+By using virtual columns through the virtual columns we are storeing stored expression then we must used 
+Genrated always as clause.
+
+Syntax:
+-------
+columnname datatype(size)generated always as(stored expression)[virtual]
+Generally we can not insert data into virtual columns 
+
+sql>create table test(a number(10),b number(10),c number(10) generated always as(a+b)virtual);)
+
+sql>insert into test(a,b)values(30,20);
+
+sql>select * from test;
+
+    A      B      C
+===================
+    30     20     50
+
+In oracle if you want to view virtual column expression then we must used data_default properties from
+user_tab_columns data dictionary 
+
+EXAMPLE:
+sql>desc user_tab_columns;
+sql>select column_name,data_default from user_tab_columns where table_name='TEST';
+
+column_name     data_default
+----------------------------
+C                   "A+B"
+
+Oracle having two types of b-tree indexes these are 
+1:Non unique btree index
+2:Unique btree index
+
+In oracle by default automatically created indexes are uniquie b-tree indexes where as manually created inde-xes are Non unique b-tree indexes
+By default unique b-tree indexes performance is very high compare to Non unique b-tree indexes 
+In oracle we can also create unique b-tree indexes explicitly by using following syntax:
+
+SYNTAX:
+-------
+create unique index indexname on tablename(columnname);
+
+Generally we can not create unique index on duplicate value column
+
+EXAMPLE
+-------
+sql>create unique index in3 on emp(ename);
+index created
+
+sql>create unique index in4 on emp(job);
+
+Error:cannot CREATE UNIQUE
+INDEX;duplicate keys found
+
+
+BITMAP INDEX:-
+------------
+
+Oracle 7.3 introduced bitmap index 
+Syntax:
+------
+create bitmap index indexname on tablename(columnname);
+
+Generally bitmap indexes are used in Datawarehousing applications
+
+Generally bitmap indexes are created on low cardinality column
+
+Cardinality of a column = number of distinct value of column
+                           ---------------------------------
+                            total number of rows
+
+ex1:
+cardinality of empno = 14/14 = 1; -->high cardinality-->btree indexes
+
+ex2:
+cardinality of job = 5/14=0.357 -->low cardinality-->bitmap 
+
+When ever we are creating bitmap index then oracle server internally automatically creates bitmap table.
+along with rowid based on index column values.
+Whenever user requesting data by using logical operators or by using equality operator then directly ,
+bits or operator within bitmap table.
+
+And also based on the required queries where bit 1 available those rowid are collect  by the oracle server.
+and also those rowid are matched with table rowids by using internal bitmap function.
+Then only those rows are retrieve from table 
+
+EXAMPLE:
+--------
+sql>Select * from emp where job='CLERK';
+                 +----[rows]  +------------[index]
+                 |  |
+   --------------+------------+-------------------------------------------
+   | CLERK     | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+   |-----------+---+---+---+---+---+---+---+---+---+----+----+----+----+----|
+   | CLERK     | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0  | 1  | 1  | 0  | 1  |
+   | SALESMAN  | 0 | 1 | 3 | 0 | 1 | 0 | 0 | 0 | 0 | 1  | 0  | 0  | 0  | 0  |
+   | MANAGER   | 0 | 0 | 0 | 1 | 0 | 1 | 1 | 0 | 0 | 0  | 0  | 0  | 0  | 0  |
+   | ANALYST   |   | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0  | 0  | 0  | 1  | 0  |
+   | PRESEDENT | 0 | 0 | 0 | 0 |   | 0 | 0 | 0 | 0 | 0  | 0  | 0  | 1  | 0  |
+   
+
+note:
+Generally whenever more DML operation are required then we are not allowed to use bitmap indexes Because,
+Whenever we are modifying Atleast on row based on bitmap indexed column then all other rows are automticaly-
+locked.
+
+Note:
+In all relational database by using index we are achieving physical data independence i.e when ever we are,
+an index in internal level then structure of table will not be effected at conceptual level but here,
+Performance will be effected this is called physical data independence in oracle.
+
+In oracle we can also drop index by using 
+
+drop index indexname;
+EXAMPLE:
+-------
+sql>drop index abc;
+
+

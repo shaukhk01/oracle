@@ -1,0 +1,626 @@
+1:write a query to display first rowid
+ SELECT * FROM EMP WHERE ROWID=(SELECT MIN(ROWID)FROM EMP)
+2:write a query to display last row from emp table by using rowid
+SELECT * FROM EMP WHERE ROWID=(SELECT MAX(ROWID)FROM EMP)
+3:write a query to display duplicate row's from the following table.
+>CREATE TABLE TEST(SNO NUMBER(10));
+>INSERT INTO TEST VALUES(.....);
+>SELECT * FROM EMP;
+SELECT SNO,COUNT(*)from emp test group by sno having count(*)>1
+4:Delete duplicate row's from table.
+IN ALL RELATIONAL DATABASE DELETE  DUPLICATE ROWS EXCEPT ONE ROW IN EACH GROUP FROM A TABLE IS ALSO CALLED AS DELETE DUPLICATE ROWS FROM TABLE IN ORACLE WE ARE DELETING DUPLICATE ROWS FROM TABLE THEN MUST USE ROWS ID
+EXAMPEL:
+DELETE FROM TEST WHERE ROWID NOT IN(SELECT MAX(ROWID)FROM TEST GROUP BY SNO);
+select * from test;
+note:
+for improve performance of the query we can also use rowid in order by clause within analytical function because analytical function also very fastly retrive data from database and rowid retrive data very fastly from database.
+5:WRITE A QUERY TO DISPLAY SECOND ROW FROM EMP TABLE BY USING ROW_NUMBER()ANALYTICAL FUNCTION,ROWID
+SELECT * FROM(SELECT DEPTNO,ENAME,ROW_NUMBER()OVER(ORDER BY ROWID)R FROM EMP)WHERE R=2
+
+6:WRITE A QUERY TO DISPLAY LAST TWO ROW'S FROM EMP TABLE BY USING ROWID,ROW_NUMBER()ANALYTICAL FUNCTION.
+
+SELECT * FROM(SELECT DEPTNO,ENAME,SAL,ROW_NUMBER()OVER(ORDER BY ROWID DESC)R FROM EMP)WHERE R<=2;
+
+7:WRITE A QUERY TO DISPLAY EACH DEPARTMETN SECOND ROW FROM EMP TABLE BY USING ROWID,ROW_NUMBER()ANALYTICAL FUNCTION.
+
+SELECT * FROM(SELECT DEPTNO,ENAME,ROW_NUMBER()OVER(PARTITION BY DEPTNO ORDER BY ROWID)R FROM EMP)WHERE R=2  
+
+LAG,LEAD():-
+-------------------------------
+These TWO ANALYTICAL FUNCTION COMPARE VALUE OF CURRENT WITH PREVIOUS OR FOLLOWING ROW'S.THESE TWO ANALYTICAL FUNCTION ALSO BELONG TO ALL RELATIONAL DATABASE PRODUCT
+
+LAG:-lag analytical function is used to display previous row value's along with current row,this function accept'
+three parameter's 
+
+syntax:LAG(COLUMNAME,OFFSET,DEFAULTVALUE)OVER(PARTITION BY COLUMNNAME ORDER BY COLUMNNAME [ASC/DESC])
+here:- offset,default[will be number value]
+
+note: here also partiton by clause is optional clause
+
+Here second,third parameter are optional parameter here second parameter offset return number's these number always
+start with 1,here 1 represent first previous value,and also 2 represent second previous value.,if previous value are 
+not available  then third parameter default value return NUll in place of null value we can also subsitute any value.
+
+EXAMPLE:
+SELECT ENAME,SAL,LAG(SAL,1,0)OVER(ORDER BY SAL DESC)AS PRE_VAL FROM EMP;
+        KING             5000          0
+        FORD             3000       5000
+        SCOTT            3000       3000
+        JONES            2975       3000
+        BLAKE            2850       2975
+
+LEAD():-
+
+It is used to display next row value along with current row this function also except three parameter.
+SYNTAX:-lead(columnname,offset,defaultvalue)over(partiton by columnname order by columnname [asc/desc]])
+
+EXAMPLE:
+SELECT ENAME,SAL,LEAD(SAL,1,0)OVER (ORDER BY SAL DESC)AS NEXT_SAL FROM EMP
+
+CORE RELATED SUBQUERY:
+---------------------
+Generally In NOn query subquery child excute first then only parent excute where as in core related subquery parent
+query excute first then only child excute.
+
+Generally in non core related query child excuted only one's per parent query table where as in core related subquery,
+child query is excuted  for each and every row for the parent query table 
+
+When ever we are submitting core related subquery into the oracle server then oracle server get a candidate row from,
+the parent query table and then control pass into child query where condition and also base on evalution value it,
+compare value with parent query where condition 
+
+In all relational databases in core related subquery we must create table alias name within parent query and then,
+we must use this alias name within child query where condition 
+
+SYNTAX:
+      select * from tablename aliasname where columnName=(select * from tablename where columnname=aliasname.column)
+
+
+Generally core related subquery are used in denomilization process in this process modify one table one coumn value based on another related table another column in this case we are using co-related update 
+
+SYNTAX:
+update tablename1 aliasname1 set column=(select colname from tablename2 aliasname2 where aliasname1.commoncolname1=aliasname.col2)
+
+example:
+SQL>ALTER TABLE EMP ADD DNAME VARCHAR2(10);
+SQL>UPDATE EMP E SET DNAME=(SELECT DNAME FROM DEPT D WHERE E.DEPTNO=D.DEPTNO);
+SQL>SELECT * FROM EMP;
+
+WRITE A QUERY TO DISPLAY SECOND HIGHEST SALARY EMPLOYEEE FROM THE FOLLOWING TABLE BY USING CORE-RELATED SUBQUERY.
+
+SQL>CREATE TABLE TEST(ENAME VARCHAR2(10)SAL,NUMBER(10));
+
+>SELECT  * FROM TEST;
+
+>SELECT * FROM TEST E1 WHERE 2=(SELECT COUNT(*))FROM TEST E2 WHERE E2.SAL>=E1.SAL);
+
+ENAME            SAL
+murli            200
+
+EXECUTION PROCESS:
+-----------------
+PHASE1:
+STEP1:-get a candidate row(first row---->abc 100); 
+STEP2:-select count(*) from test e2 where e2.sal>=100;
+
+STEP3:-SELECT * FROM TEST E1 WHERE 2=4(FALSE)
+
+PHASE2:
+------
+STEP1:-GET A CANDIDATE ROW (XYZ 150)
+STEP2:-SELECT COUNT(*) FROM TEST E2 WHERE E2.SAL>150;
+STPE3:-SELECT * FROM TEST E1 WHERE 2=3(FALSE)
+PHASE3:
+------
+STEP1:-get a candidate row(murli 200)
+STEP2:-select count(*) from test e2 where e2.sal>200;
+
+STEP3:-select * from test e1 where 2=2(true)
+[WHEN CONDITION IS TRUE THEN ONLY THAT CANDIATE ROW RETURN INTO RESULT]
+
+PHASE4:-
+------
+STEP1:-get a candidate row(pqr 300)
+STEP2:-SELECT COUNT(*)FROM TEST E2 WHERE E2.SAL>=300;
+
+insert into test values('zzz',200);
+select * from test;
+
+Select * from test e1 where 2=(select count(*)) from test e2 where e2.sal>=e1.sal);
+    
+                no rows selectec
+Whenever resource table column having duplicate data and also when we are try to retive duplicate data by using above query.
+Then oracle server does not return any rows to overcome this problem we must used distinct clause within count()function.
+
+Solution:
+--------
+sql>SELECT * FROM TEST E1 WHERE 2=(SELECT COUNT(DISTINCT(SAL)) FROM TEST E2 WHERE E2.SAL>=E1.SAL);
+
+                        ENAME           SAL
+                        murali          200
+                        zzz             200
+
+WRITE A QUERY TO DISPLAY 5TH HIGHEST SALARY EMPLOYEE FROM EMP TABLE BY USING CORE-RELATED SUBQUERY.
+
+sql>Select * from emp where 5=(select count(distinct(sal))from emp e2 where e2.sal>=e1.sal)
+
+WRITE A QUERY TO DISPLAY NTH HIGHEST SALARY EMPLOYEEE FROM EMP TABLE, BY USING CORE-RELATED SUBQUERY.
+
+sql>Select * from emp e1 where &n=(select  count(distinct(sal))from emp e2 where e2.sal>=e1.sal);
+
+WRITE A QUERY TO DISPLAY THE EMPLOYEE WHO ARE GETTING MORE SALARY THEN THE AVERAGE SALARY OF JOB.FROM EMP TABLE BY USING CORE-RELATED SUBQUERY.
+
+sql>SELECT * from emp e where sal>(select avg(sal)from emp where job=e.job);
+---------------------------------------------------
+---------------------------------------------------
+---------------------------------------------------
+
+
+EXISTS Operators:-
+**********************************************************************
+In all Relational Database we can also used Exists Operator in core-related subquery Exists oprator always return Boolean value.
+Either True or False Exists Performance is very high Compare to in Operator.
+
+Generally Exists Operator used in where Condition of the Parent Query,In all relational database when ever we are using exists.
+Then we are not allowd to used ColumnName Along with Exists Operator In where condition of the where query.
+
+Generally in all RELATIONAL database if you want to Test one table column value are availabe in another related table.
+Then we must used Exists Operator by using core-related SubQuery
+
+Generally Exists Operator always return Boolean Value Either True or False
+
+Generally Exists Operator used to Test whether given Set is Empty on Nonempty,i.e Exists Operator on NonEmpty Set return True,
+Where as Exists Operator Empty Set return False.
+
+EXAMPLE:
+-------
+exists{1,2,3,4}==>True
+exists{       }==>False
+
+WRITE A QUERY TO DISPLAY THOSE DEPARTMETN FROM DEPT TABLE HAVING EMPLOYEE IN EMP TABLE BY USING CORE-RELATED SUBQUERY EXISTS OPERATOR.
+ FROM 
+sql>SELECT * FROM DEPT D WHERE EXISTS(SELECT * FROM EMP WHERE DEPTNO=D.DEPTNO);
+note:[core-related query always used after table name alias name it is compulsary]
+
+SYNTAX:
+------
+SELECT * FROM TABLENAME ALIASNAME WHERE EXISTS(SELECT * FROM TABLENAME WHERE COLUMNAME=ALIASNAME.COLUMNAME)
+
+
+Write a query to DISPLAY THOSE DEPARTMETN from dept table having employnce in emp table by using non-core-related subquery in Operator
+
+sql>SELECT  * FROM DEPT WHERE DEPTNO IN(SELECT DEPTNO FROM EMP)
+note:here you can see non-core-related query not required to used alias name after tableName,
+
+Exists Versus In operator:
+**************************
+In all relational database EXISTS operator gives more performance then the IN operator  whenever we are testing one table column.
+Value or available in another related table 
+
+EXAMPLE:
+Non core-related subquery:
+--------------------------
+sql>select * from dept where deptno in(select deptno from emp)
+
+                    if deptno = 10    
+                                    deptno |
+                                    20     | not matched
+                                    10     | matched
+                                    30     | not matched
+                                    10     | matched
+                                    20     | not matched
+                                    10       matched
+                                    20       not matched
+                                    30       not matched
+core-related subquery:
+----------------------
+how exists working:
+==================
+sql>select * from dept d where exists(select * from emp where deptno=d.deptno);
+
+                            if deptno = 10
+
+                                            
+                                    deptno |
+                                    20     | not checked
+                                    10     | matched here exists operator return True
+                                    30     | not check  here does not chedk return False.
+                                    10     | matched
+                                    20     | not not checked
+                                    10       matched
+                                    20       not checked
+                                    30       not checked
+note:if values are not matched then exists operaotr does not checked any more.
+
+
+In the above example Whenever we are using Non-core-related queyr IN operator if dept table deptno 10 then Oracle server will see
+All the deptno number's in emp table whether matched in found or not found.
+
+Whenever we are using core_related subquery exists operator for dept table  deptno 10 then Oracle server finds at least one matched in emp table then oracle does not search remaining no of record in emp table and also in this case exists operator stop the execution and also return True This process always check less no of record in emp table in each and every phase compare to Non core-
+related subquery in Operator that's why in this case only exists Operator give more performances then the in operator 
+
+
+Q:WRITE A QUERY TO DISPLAY THOSE DEPARTMENT FROM DEPT TABLE DOES NOT HAVE EMPLOYEES IN EMP TABLE BY USING NON-core_related sub-
+query not in Operator
+
+sql>SELECT * FROM DEPT WHERE DEPTNO NOT IN(SELECT DEPTNO FROM EMP);
+
+        deptno   dname     local
+-------------------------------
+        10       OPERATOR  BOSTON
+Q:WRITE A QUERY TO DISPLAY THOSE DEPARTMENT FROM DEPT TABLE AND THOSE DEPARTMENT DOES HAVE EMPLOYEES IN EMP TABLE BY USING CORE-
+RELATED SUBQUERY NOT EXISTS OPERATOR
+
+sql>SELECT * FROM DEPT D WHERE NOT EXISTS(SELECT * FROM EMP WHERE DEPTNO=D.DEPTNO);
+    
+            DEPTNO      DNAME       LOC
+---------------------------------------
+            40          Operator    BOSTON
+
+note1:
+    In all relational database not in operator does not work with null value  where as not exists operator works with null value.
+
+note2:
+    we can also used exists operator within single table 
+Q:WRITE A QUERY TO DISPLAY EMPLOYEES WHO ARE GETTING SAME SALARY AS SCOTT SALARY FROM EMP TABLE.BY USING CORE RELATED SUBQUERY EXI-STS OPERATOR.
+
+sql>SELECT * FROM EMP E1 WHERE EXISTS(SELECT * FROM EMP E2 WHERE E2.ENAME='SCOTT' and E1.SAL=E2.SAL)
+
+We can also use exists operator within Non core related subquery in this case database server always check child query return VALUE or not whenever child query return value then exists operatur return TRUE when exists operator return TRUE then only parent 
+query executed... whereas  exists operator return FALSE then parent query never executed.. 
+
+EXAMPLE1:s in teh list
+sql>SELECT * FROM EMP WHERE EXISTS(SELECT * FROM EMP WHERE DEPTNO=10);
+            
+output: 
+
+EXAMPLE2:
+sql>SELECT * FROM EMP WHERE EXISTS(SELECT * FROM EMP WHERE DEPTNO<10) output: return No rows selected 
+ALL ANY OPERATORS ARE USED IN NON CORE-RELATED SUBQUERYs(or) in,all,any operators are used in multiple row subquerys:-
+--------------------------------------------------------------------------------
+
+In all relational database by default relational operator compares only one value at a time if you want to compare multiple values
+at a time by using these relational operator then must used subquery special operator's ANY,ALL along with these relational optr
+
+EXAMPLE:
+sql>SELECT * FROM EMP WHERE DEPTNO=(10,20);
+ERRROR:THIS OPERATOR IS FOLLWED BY ANY OR ALL
+sql>SELECT * FROM EMP WHERE DEPTNO=any(10,20);
+
+
+in ==> it returns same values in the list-->child query
+all==> it satisfies all value in the list -->child QUERY
+any==> it satisfies any value in the list[at least one]
+
+
+Q:WRITE A QUERY TO DISPLAY THE EMPLOYEE WHO ARE GETTING MORE SALARY THEN THE ALL SALARY OF THE CLERK FROM EMP TABLE BY USING SUB-l
+QUERY SPECIAL OPERATOR.AND ALSO DISPLAY FINAL OUTPUT IN SALARY decending order 
+
+sql>select * from emp where sal>all(select sal from emp where job='CLERK')order by sal desc
+note1:Whenever we are using subquery special operator all then dataserver internally uses logically OPERATOR AND where as wheneverwe are using subquery special operator any then database server internally uses logical operator OR
+
+EXAMPLE:
+sql>SELECT * FROM EMP WHERE DEPTNO>ALL(10,20);
+
+sql>SELECT * FROM EMP WHERE DEPTNO>ANY(10,20);
+
+output:-        20
+                30
+
+In all relational databases in operator is also same as = any but not in operator not same <> any
+
+EXAMPLE1:
+sql>SELECT * FROM EMP WHERE DEPTNO IN(10,20);
+10
+20
+
+sql>SELECT * FROM EMP WHERE DEPTNO=ANY(10,20);
+10
+20
+
+EXAMPLE2:
+sql>SELECT * FROM EMP WHERE DEPTNO NOT IN(10,20);   
+
+30
+
+sql>SELECT * FROM EMP WHERE DEPTNO <>ANY(10,20);
+10
+20
+30
+note:
+In all relational database not in operator also same as not = all 
+
+EXAMPLE:
+sql>SELECT * FROM EMP WHERE DEPTNO<>ALL(10,20)
+
+MULTIPLE COLUMN SUBQUERY:
+-------------------------
+
+In All relational database we can also compare multiple column values of the child query with the multiple column value of the parent query these type of query is also called as multiple column subquery.
+
+In multiple column subquery we must specifies parent query where CONDITIONal column within prentheses in parent query
+
+SYNTAX:
+=======
+
+SELECT * FROM TABLENAME WHERE(COL1,COL2,....)IN (SELECT COL1,COL2,.....FROM TABLENAME WHERE CONDITION)
+
+Q:WRITE A QUERY TO DISPLAY THE EMPLOYEE WHO JOB,MGR MATCHED WITH THE JOB,MGR OF THE EMPLOYEE SCOTT FROM EMP TABLE BY USING MULTIPLE-COLUMN SUBQUERY.
+
+sql>SELECT * FROM EMP WHERE (JOB,MGR)IN(SELECT JOB,MGR FROM EMP WHERE ENAME='SCOTT')
+
+
+Q:WRITE A QUERY TO DISPLAY ENAME,DNAME,SALARY OF THE EOMPLOYEE WHO SALARY,COMMISION MATCHED WITH THE SALARY,COMMISION OF THE EOMPLOYEE WORKING IN THE LOCATION 'DALLAS' FROM EMP,DEPT TABLES BY USING MULTIPLE COLUMN SUBQUERY.
+
+sql>Select ename,dname,sal from emp e,dept d where e.deptno=d.DEPTNO and(sal,nvl(comm,0))in (select sal,nvl(comm,0)from emp e,dept d where e.deptno=d.DEPTNO and d.loc='DALLAS')
+
+[aggregatable:means dublicate column value.]
+
+
+Q:WRITE A QUERY TO DISPLAY THE EMPLOYEES WHO ARE GETTING MAXIMUM SALARY IN EACH DEPARTMENT FROM EMP TABLE.BY USING MULTIPLE ROWS SUBQUERY.
+
+sql>update emp set sal=3050 where ename='FORD'
+sql>select deptno,sal,ename from emp where sal in(select max(sal) from emp group by deptno);
+
+            DEPTNO              SAL             ENAME
+-----------------------------------------------------
+            20                  3050            FORD
+            30                  3050            BLAKE
+            20                  3200            SCOTT
+            10                  5000            KING
+
+In all relational database whenever we are using multiple subquery then child Query return MULTIPLE values.
+if those multiple values compare with number of values in each group and also those multiple value are available in 
+differencet group and also if those multiple value are same value in some groups then database servers return wrong 
+results.To over come this problem ANSI/ISO SQL provided multiple column subquery. which gives current result.
+
+Because multiple column sub query having record wise comparison
+
+solution:(multiple column subquery)==>
+
+sql>Select deptno,sal,ename from emp where (deptno,sal)in(select deptno,max(sal)from emp group by deptno);
+
+
+            DEPTNO              SAL             ENAME
+-----------------------------------------------------
+            30                  3050            BLAEK
+            20                  3200            SCOTT
+            10                  5000            KING
+
+
+Q:WRITE A QUERY TO DISPLAY SENEIORMOST EMPLOYEE IN EACH JOB FROM EMP TABLE.BY USING MULTIPLE COLUMN SUBQUERY.
+
+slq>Select job,ename,hiredate from emp where(job,hiredate)in(select job,min(hiredate)from emp group by job);
+
+
+                JOB         ENAME           HIREDATE
+-----------------------------------------------------
+                CLERK       SMITH           17-DEC-80
+                SALESMAN    ALLEN           20-FEB-81
+                PRESIDENT   KING            17-NOV-81
+                MANAGER     JONES           02-APR-81
+                ANALYST     FORD            03-DEC-81
+
+SEQUENCE:
+---------
+Sequence is database object which is used to generate sequence of number's automatically 
+Generally sequences are used to generate primary key values automatically.
+Generally sequence is indenpendent database once sequence has been created then number of users simeltanously access that sequence.
+
+
+SYNTAX:
+create sequence sequence ename start with n increment by n minvalue n maxvalue n cycle/nocycle cache/nocache;
+
+Every sequence database object having two pseudo columns if you want to generate sequence values or access sequence value then we are using sequence pseduo columns,these sequence psesudo columns are.
+
+1:currval
+2:nextval
+
+syntax:
+=======>
+sequencename.currval
+
+
+syntax:
+=======>
+sequencename.nextval
+
+These sequence pseudo column used in ,INSERT,UPDATE,DELETE,SELECT statement
+
+In oracle if you want to generate sequence value by using select statment then we must use dual table.
+
+Syntax:
+
+select sequencename.currval from dual;
+
+
+Syntax:
+
+select sequencename.nextval from dual;
+
+
+sql>create sequence s1 start with 5 increment by 2 maxvalue 100;
+
+sql>select s1.currval from dual;
+
+ERROR:sequence s1.currval is not yet defined in this session
+
+In oracle if you want to generate first sequence number then we must used nextval pseudo column  because currval psequeo column returns current value of sequence session if sequence session already having value 
+
+sql>select s1.nextval from dual;
+    5
+sql>select s1.nextval from dual;
+    7
+sql>select s1.nextval from dual;
+    9
+sql>select s1.currval from dual;
+    9
+
+note:
+Generally nextval is a globalize session where as currval is a localize session
+
+
+
+sql>conn scott/tiger
+session 1:
+
+sql>create sequence s1;             |
+sql>select s1.nextval from dual;    |
+sql>select s1.nextval from dual;    | another session nextval will same but current value will be changed according to query execute.
+sql>select s1.currval from dual;    |
+
+In oracle we can also alter sequence parameter value by using alter command but we can not alter starting sequence number.
+SYNTAX:
+ALTER SEQUENCE SEQUENCENAME PARAMETERNAME NEWVALUE;
+
+sql>Create sequence s1 start with 5 increment by 1 minvalue 3 maxvalue 100;
+
+sql>select s1.nextval from dual;
+    5
+
+sql>select s1.nextval from dual;
+    6
+
+sql>select s1.nextval from dual;
+    7
+sql>alter sequence s1 increment by -1;
+
+sql>select s1.nextval from dual;
+    6
+sql>/
+    5
+sql>/
+    4
+sql>/
+    3
+
+sql>/
+Error:sequence s1.nextval goes below minvalue and cannot be instantiated
+
+sql>Alter sequence s1 start with 4;
+
+Error:cannot alter starting sequence number;
+
+note:
+In oracle sequence start with can not be less then min_value 
+
+sql>CREATE SEQUENCE S1 START WITH 3 INCREMENT BY 1 MINVALUE 5;
+
+ERROR:start with cannot be less than minvalue
+
+
+In oracle if you wantt to generate primary key automatically then we must use sequence data base object 
+example:
+CREATE TABLE TEST(SNO NUMBER(10)PRIMARY KEY,NAME VARCHAR2(10));
+
+sql>create sequence s1;
+sql>insert into test(sno,name)values(s1.nextval,'&name');
+
+Enter a value for name: a
+Enter a value for name: b
+Enter a value for name: c
+Enter a value for name: d
+Enter a value for name: e
+
+sql>select * from test;
+        SNO     NAME
+--------------------
+        1       a
+        2       b
+        3       c
+        4       d
+        5       e
+
+sql>alter table test add rno number(10);
+
+sql>select * from test;
+
+        SNO         NAME        RNO
+------------------------------------
+        1           a
+        2           b
+        3           c
+        4           d
+        5           e
+
+sql>create sequence s2 start with 1001;
+
+sql>update test set rno=s2.nextval;
+
+slq>select * from test;
+
+        SNO         NAME        RNO
+------------------------------------
+        1           a           1001
+        2           b           1002
+        3           c           1003                               
+        4           d           1004
+
+IDENTITY COLUMN(12c):
+================>
+Oracle 12c introduce identity columns which is used to Generate sequence of number automatically in this case oracle server,
+internally automatically creates system Generate sequence but these sequnce value are always start with 1[one] and also auto-incre-mented by one 
+Oracle provided follwoing three clauses for identity column
+These are 
+
+1:Generated always as identity
+2:Generated by default as identity
+3:Generated by default on null as identity 
+
+
+1:Generated always as identity:
+===============================
+Whenever we are using always as clause then we are not allowed to insert data into identity COLUMN
+
+SYNTAX:
+COLUMNNAME DATATYPE(SIZE)GENERATED ALWAYS AS IDENTITY
+
+sql>create table b1(sno number(10)generated always as identity,name varchar2(20));
+
+sql>insert into b1(name)values('&name');
+
+Enter value for name:x
+
+sql>/
+Enter values for name:y
+
+sql>select * from b1;
+
+        SNO     NAME
+--------------------
+        1       x
+        2       y
+sql>insert into b1(sno,name)values(99,'z');
+
+ERROR
+
+
+2:Generated by default as identity:-
+====================================>
+
+When we are using by default clause then we are allowed to insert our own values into identity column
+
+
+
+3:
+
+
+
+
+In relational database genrating primary key automatically is also called as autoincrement concept
+in oracle we are implementing auto increment concept by using sequnence data base object in oracle 12c we are using sequence pesudo column within default clause
+
+Then we are not allowed to use pl/sql row level triger this is called new auto increment concept
+
+syntax:
+colname datatype(size)default sequencename.nextval primary key
+
+sql>create sequence s1 start with 5;
+sql>create table test(sno number(10)default s1.nextval primary key,name varchar2(10));
+
+
+sql>insert into test(name)values('&name');
+Enter value for name:b
+sql>/
+Enter value for name:c
+sql>select * from test;
