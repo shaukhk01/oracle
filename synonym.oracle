@@ -1,0 +1,18 @@
+                                    SYNONYM
+                                    ========
+Synonym is permanent alias name created from actual object.
+i.e is synonym created from data base object like table,view,procedure,function..
+Synonym is a database object which provide security Because Synonym hides another schema username,objectname
+
+In all relational database Synonym are created By using following :
+Syntax:
+-------
+create synonym synonymname for username.objectname;
+
+Whenever we are installing oracle server then automatically predefined read only tables are created.
+within oracle database these predefined read only table also having predefined synonym names.
+
+Example:
+--------
+recyclebin is a synonymname for user_recyclebin data dictionary and also COLS is a synonymname for
+USER_TAB_COLUMN data dictionary and also SEQ is a synonymname for USER_SEQUENCES
