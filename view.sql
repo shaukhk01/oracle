@@ -256,7 +256,7 @@ sql>select * from mc1;
 
 sql>SELECT ROWID,SNO,NAME FROM BASE;
 sql>SELECT ROWID,SNO,NAME FROM V1;
-here view rowid are also same as base table rowid thats why view are stored any data thats why view is also called as virtual table or window of table.
+here view rowid are also same as base table rowid thats why view are stored  not any data thats why view is also called as virtual table or window of table.
 But through the view we can access base table data
 
 sql>select rowid,sno,name from base;
@@ -336,7 +336,7 @@ sql>exec dbms_mview.refresh('mc1');
 sql>select rowid,sno,name from mc1;
 (here rowids are changed)
 +---------------------------------------------------------------------------------------------------------+
-|If you are adding new column after dbms_mview execution then again updation for column and data will get | Error.
+|If you are adding new column after materialized view creation then again updation for column and data will get | Error.
 +---------------------------------------------------------------------------------------------------------+
 
 2:FAST REFRESH MATERIALIZED VIEW:-
@@ -427,9 +427,9 @@ sql>select * from mc5;
         | 4   | D    |
 
 sql>update base set name='zz' where sno=2;
-sql>select * from base;
-        | SNO | NAME |
-        |-----+------|
+sql>select * from base;                      /
+        | SNO | NAME |                      /
+        |-----+------|                     /
         | 1   | XY   |
         | 2   | ZZ   |
         | 3   | C    |
@@ -462,9 +462,9 @@ sql>select * from mc5;
 | When we are performing updation,  | When we are performing updation/insertion operation on base table, |
 | operation then automatically all, | then F materialized view change only particular row of rows id,and |
 | rows of rowid will changed.       | remaining all address will be same but in this case commit not     |
-|                                   | any address will be changed.
-**********************************************************************************************************
-
+|                                   | any address will be changed.                               |
+*************************************************************************************************|********
+                                                                                                 |
 
  DATA CONTROL LANGUAGE(DCL) |
 
@@ -1035,7 +1035,10 @@ Error:cannot delete from view..
 
 In oracle we can also drop a view by using drop view viewname;
 
-
-
-
+ ---------------------------------------------------------------------------+
+sql>create table t1(sno number(10),name varchar(10),dname varchar(10));     |
+sql>insert into t1(sno,name)values(&sno,'&name');                           |
+                                                                            |
+Now you can insert using address operator except on column  also            |
+----------------------------------------------------------------------------+
 
