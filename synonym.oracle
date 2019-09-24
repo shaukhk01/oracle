@@ -16,3 +16,92 @@ Example:
 --------
 recyclebin is a synonymname for user_recyclebin data dictionary and also COLS is a synonymname for
 USER_TAB_COLUMN data dictionary and also SEQ is a synonymname for USER_SEQUENCES
+
+Data dictionary in oracle if you want to view all data  dictionary and also those related synonym then we,
+are using follwing select statement 
+Syntax:
+--------
+select * from dict;
+
+Oracle having two types of user defined synonym these are:
+
+1:Private synonym;
+2:Public synonym :
+
+Private Synonym:
+================
+
+In oracle By default Synonym are Private Synonym
+syntax:
+-------
+create synonym synonymname for username.objectname
+
+Public Synonym:
+================
+Public synonym is a access By all users in Oracle database 
+
+syntax:
+-------
+create public synonym synonymname for username.objectname;
+
+In oracle before we are creating public synonym then database adminstrator create public synonym system privilege by using follwoing syntax,otherwise oracle server return errors
+
+syntax:
+-------
+grant create public synonym to username
+
+sql>CONN SCOTT/TIGER;
+---------------------
+SQL>GRANT ALL ON EMP TO MURALI,A1;
+
+SQL>CONN MURALI/MURALI;
+-----------------------
+sql>select * from scott.emp,cr;
+sql>create synonym abc for scott.emp;
+sql>select * from abc,cr;
+sql>create public synonym pqr for scott.emp;
+Error:-insufficent privileges
+
+sql>conn sys as sysdba;
+sql>grant create public synonym to murali;
+sql>create public synonym pqr for scott.emp;
+sql>select * from pqr
+
+
+sql>CONN A1/A1;
+-----------------------
+sql>select * from abc;
+error:-table or view does not exists
+
+sql>select * from pqr;
+
+We can also drop synonym by using:
+drop synonym synonyname;
+
+When ever we are droping synonym then actual object still exists that's why synonym also provide security,
+For Orignal object 
+
+note:
+In oracle if any synonoym does not drop then we must give drop any synonym system privileg to user By,
+Using following syntax.
+
+syntax:
+-------
+grant drop any synonym to username;
+
+note2:
+In oracle all synonyms information stored under user_synonym data  dictionary
+
+sql>desc user_synonyms;
+ ------------------------------------------+
+1:view                                     |
+2:sequence                                 |
+3:synonym                                  |
+4:index                                    |
+5:cluster                                  |
+mostly used database object.               |
+                                           |
+                                           |
+-------------------------------------------+
+
+
