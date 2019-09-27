@@ -1,0 +1,346 @@
+                                 SET OPERATORS
+                                 =============
+Set operator are used to reterive data from single or multiple tables.  set operators are also called as 
+virticale joins.
+These set Operators are:
+1:Union     =>it returns value unique time+sorting
+2:Union all =>unique +duplicate
+3:Intersect =>return common values
+4:Minus     =>value are in first query and those value are not in second query  
+
+example:
+--------
+sql>select job from emp where deptno=10;
+
+JOB
+--------
+MANAGER
+PRESIDENT
+CLERK
+
+sql>select job from emp where deptno=10;
+
+JOB
+--------
+CLERK
+MANAGER
+ANALYST
+CLERK
+ANALYST
+
+sql>select job from emp where deptno=10 union select job from emp where deptno=20;
+
+JOB
+--------
+ANALYST
+CLERK
+MANAGER
+PRESIDENT
+
+When ever we are using set operator always corresponding must belong to same data type and by default set,
+operator return first query column name as column heading
+
+sql>select dname from dept union select ename from emp;
+
+DNAME
+--------
+ACCOUNTING 
+ADMAS
+ALLEN
+BLAKE
+
+note:
+In oracle we can also reterrive data from multiple queries by using set operator if corresponding expression not belong to same data type also in this case we must use appropirate time conversion function,
+
+sql>select deptno from emp union select dname from dept;
+
+ERRROR:expression must have same datatype as corresponding expression 
+
+solution:
+----------
+
+sql>select deptno "deptno",to_char(null) "deptnames"from emp
+
+        
+                deptno      dnames
+              ---------    ----------
+                10
+                20
+                3o         
+                          ACCOUNTING
+                          Operations
+                          RESEARCH
+                          SALES
+                            
+Conversions:-
+==============
+
+convert one data type into another data type is called conversion
+
+Oracle having two type of conversion these are:
+
+1:Implicit conversions.
+2:Explicit conversions.
+
+Implicit conversion:-
+----------------------
+In this method oracle server only internally automatically converts one type into another type
+In oracle whenever string repersenting pure number[only number]then oracle server automaticall converts,
+string type into number 
+
+example:-
+----------
+select sal+'100' from emp;
+
+In oracle whenever we are passing any number into oracle predefined character function then oracle server,
+internally automatically convert number into character type 
+
+example:
+--------
+sql>select length(3678)from dual;
+            =>4
+in oracle whenever we are passing date string into oracle predefined date functions[add_months(),last_day(),next_day(),months_between(),....]
+
+Then oracle server internally automatically converts date string into oracle date type,But here passed,
+parameter return value must matched with default date formate return vlaues.
+
+-------------------------------------------------------
+-------------------------------------------------------
+-------------------------------------------------------
+
+Write a query which is used to display diagnal values.form the follwing table by using d-code coversion
+
+sql>create table test(col1 number(10),col2 number(10),col3 number(10));
+sql>insert into test values(....);
+
+sql>select * from test;
+
+| col1 | col2 | col3 |
+|------+------+------|
+| 10   | 20   | 30   |
+| 40   | 50   | 60   |
+| 70   | 80   | 90   |
+
+
+output:10 50 90[diagonal]
+
+sql>selectt rownum,decode(rownum,1,col1,2,col2,3,col3) result from test;
+
+| ROWNUM | RESULT |
+|--------+--------|
+| 1      | 10     |
+| 2      | 50     |
+| 3      | 90     |
+
+Pivoting:-[*][10g]
+==========
+
+In all relational databases converting rows into columns and also display aggregate function values in tabul-ar form within these columns are also called as pivoting.
+
+In oracle if you want implement PIVOTING report then we must used Decode conversion function within group
+-Function In group by clause queries. 
+
+In oracle if you want to implement Pivoting Reports then we must use Decode conversion function within,
+Group functions In group by clause queries 
+
+Example:
+--------
+sql>select job,sum(sal)from emp group by job;
+
+| JOB       | SUM(SAL) |
+|-----------+----------|
+| CLEARK    | 5450     |
+| SALESMAN  | 6800     |
+| PRESIDENT | 5400     |
+| MANAGER   | 9275     |
+| ANALYST   | 6600     |
+
+
+sql>select job,sum(decode(deptno,10,sal))"deptno10",sum(decode(deptno,20,sal))"deptno20",sum(decode(deptno ,30,sal))"deptno30" from emp group by job;
+
+| JOB       | deptno10 | deptno20 | deptno30 |
+|-----------+----------+----------+----------|
+| clerk     | 1700     | 2500     | 1250     |
+| salesman  |          |          | 6800     |
+| president | 5400     |          |          |
+| manager   | 2850     | 3275     | 3150     |
+| analyst   |          | 6600     |          |
+
+
+Case Statment:-
+=================
+Case statment also used to decoding values Oracle 8.0 introduced case statment and also Oracle 8i introducedcase conditional statment's this case conditional statement is also called as searched case statment
+
+case statment performance is very high compare to decode conversion function
+
+note1:
+Decode internally uses equality operator where as in case statment we are allowed to used all sql operator,
+explictly.[<,>,<=,>=,....]
+Oracle provide two method for case statment.these are
+
+method1:-case statment
+----------------------
+
+method2:-case conditional
+-------------------------
+stmt(or) searched case statment
+
+
+method1:-case statment
+        --------------
+syntax:-
+-------
+case columnname
+when value1 then stmt1
+when value2 then stmt2
+
+else
+stmts end;
+
+
+sql>select ename,sa,deptno,case deptno when 10 then 'ten' when 20 then 'twenty' else 'other' end from emp;
+
+| DEPTNO | CASE   |
+|--------+--------|
+| 10     | ten    |
+| 20     | twenty |
+| 30     | others |
+
+Grouping_id:-
+=============
+This function is used along with rownum,few clauses only this function accepts group by clause columns,
+and returns numbers 
+
+Example:-
+---------
+grouping_id(deptno,job)==>1
+                          2
+                          3
+
+here 1 represent first grouping column sub total
+here 2 represent second grouping column sub total;
+here 3 represent grant total
+
+select deptno,job,sum(sal),grouping_id(deptno,job)from emp group by cube(deptno,job)order by 1,2;
+
+DEPTNO  SUM(SAL) GROUPING_ID(DEPTNO,JOB)
+------- -------- -----------------------
+10      1300                 0
+10      2450                 0
+10      5000                 0
+10      8750                 1  sum of 10 deptno salary
+20      1900                 0
+20      2975                 0
+20      6000                 0
+20      10875                1  sum of 20 deptno salary
+30      950                  0
+30      2850                 0
+30      5600                 0
+30      9400                 1  sum of 30 deptno salary
+        4150                 2  sum of 10,20,30 deptno 'CLERK' salary
+        5000                 2  sum of 10 deptno PRESIDENT salary                                   
+        6000                 2 sum of 20 deptno ANALYS salary only
+        8275                 2
+subtotal[       ]            3 sum of all salary 
+
+
+sql>select deptno,job,sum(sal)case grouping_id(deptno,job)when 1 then 'Dept Subtotal' when 2 then 'Job Subtotal'when 3 then 'Grand Total' end as subtotals from emp group by cube(deptno,job)order by 1,2;
+
+
+Method:-case conditional statment(or)searched case statment[8i]
+-----------------------------------------------------------
+Oracle 8i introduced searched case statment in this case searched statment we can also used all sql optr's,
+
+syntax:
+-------
+case when columncondition1 then stmt1 when columncondition2 then stmt2.... ... ... else stmts end;
+
+example:
+--------
+select ename,sal,case when sal<1000 then 'low salary' when sal between 1000 and 30000 then 'medium salary'
+when sal in(3200,3450,3600,38000)then 'special salary' else 'other salary' end from emp;
+
+example2:
+---------
+
+sql>select decode(200,100,100,'200','200') from dual;
+
+output:-200;
+sql>select case 200 when 100 then 100 when '200' then '200' else '300' end from dual; when '200' then '200'
+
+ERROR;-inconsistent datatypes;
+expected number got char
+
+
+DIFFERENCE BETWEEN decode(),case STATMENT
+=========================================
+Decode is a conversion function Only works in Oracle where as case is statment which works with All,
+relational data base Product Because case is a Ansi standard statment and also case statment performance,
+is very high compare to decode conversion function
+
+Case can works as pl/sql construct But decode is used only in sql statment and case statment can also work,
+with searchable subquery.
+
+Generally decode function internally uses equality operator where as in case statment we are allowed to,
+use all sql operator explictly and also case statment expects dat type consistance where as decode ,
+function does not
+
+Generally in pl/sql case statment can be used as parameter of a procedure or function where as decode,
+function cannot be passed as parameter to the procedureal function
+
+Pivot():-[*]
+=======
+Oracle 11g introduced Pivot function which is used to convert rows into columns and also display aggregate,
+function values in tabular form Pivot function perfromance is very high compare to decode conversion functi-on,
+
+syntax:
+-------
+select * from (select col1,col2,... from tablename)pivot(aggregate functionName() for [clause]colname in(value1,value2,.....));
+
+example:
+---------
+sql>select * from (select job,sal,deptno,from emp)pivot(sum(sal)for deptno in(10 as deptno10,20 as deptno20,30 as deptno30));
+
+| JOB       | deptno 10 | deptno20 | deptno30 |
+|-----------+-----------+----------+----------|-----+
+| CLERK     | 2300      | 2800     | 1850--+  +---+ |
+| SALESMAN  |           |          | 5600     | +-------------------------------------------------+
+| PRESIDENT | 5700      |          |          | |> here you can see each deptno job salary disp   |
+| MANAGER   | 3150      | 3575     | 3450     | | 10 dept sum 'CLERK' job salary.                 |
+| ANALYST   |           | 7200     |          | | 20 dept sum 'CLERK' job salary.                 |
+                                                | 30 dept sum 'CLERK' job salary.                 |
+example2:                                       +-------------------------------------------------+
+----------
+sql>select * from(select job,deptno from emp)pivot(count(*)for deptno in(10 as deptno10,20 as deptno20,30 as deptno30));
+
+| JOB       | deptno10 | deptno20 | deptno30 |
+|-----------+----------+----------+----------|+-----------------------------------------------------------+
+| CLERK     | 1        | 2        | 1        ||>here you can see each deptno particular value.            |
+| SALESMAN  | 0        | 0        | 4        || 10 dept nof of CLERK is only 1                            |
+| PRESIDENT | 1        | 0        | 0        || 20 dept no  of CLERK is only 2                            |
+| MANAGER   | 1        | 1        | 1        || 30 dept no  of CLERK is only 1                            |
+| ANALYST   | 0        | 2        | 0        ||ex:select count(*)from emp where job='CLERK' and deptno=20;|
+                                              +-----------------------------------------------------------+
+[[above queries shows how many ecach rows available in each deptno like 'cleark' is 1 in deptno10
+but deptno20 in 2 like]]
+
+Data Type Conversion Function:-
+==============================
+
+Oracle having following data types conversion function these are.
+
+1:to_number();
+2:to_char();          to_number()-----------to_date ----
+3:to_date();         +-                |            
+                     |  
+                     |  
+                     |  
+                    number            char          date
+                     |      
+to_number():         |                 |              |
+-------------        |                 |              |
+                     +to_char()- ------+--------------+
+
+to_number():-
+this function is used to converting string representing numaric value with format into without format. 
+
