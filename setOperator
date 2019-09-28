@@ -160,12 +160,12 @@ sql>select job,sum(decode(deptno,10,sal))"deptno10",sum(decode(deptno,20,sal))"d
 
 | JOB       | deptno10 | deptno20 | deptno30 |
 |-----------+----------+----------+----------|
-| clerk     | 1700     | 2500     | 1250     |
-| salesman  |          |          | 6800     |
-| president | 5400     |          |          |
-| manager   | 2850     | 3275     | 3150     |
-| analyst   |          | 6600     |          |
-
+| clerk     | 1700     | 2500     | 1250     | +----------------------------------------------------------+
+| salesman  |          |          | 6800     | |   each rows sum of salary like clerk 2 times in dept10   |
+| president | 5400     |          |          | |   that's its become 1700                                 |
+| manager   | 2850     | 3275     | 3150     | |   salesman is not in deptno 10 that why it is empty      |
+| analyst   |          | 6600     |          | |   saleman is deptno30 so that deptno30  is sum of sales  |
+                                               +----------------------------------------------------------+
 
 Case Statment:-
 =================
@@ -513,4 +513,53 @@ $123
 sql>select to_char(123,'L999','nls_currency=RS')from dual;
         RS123
 
+note1:
+
+whenever we are using to_char() and also if first parameter number exceeded then the second parameter ,
+format element number of 9's then oracle return # symbol's 
+
+Example:
+sql>select to-char(875,'9,999')from dual;
+sql>select to_char(787554,'9,999')from dual;
+
+                ######
+sql>select to_char(955.89,'999.9')from dual;
+
+                955.9(here oracle server automatically round this number)
+
+0(leading zero):-
+================
+sql>select to_char(123,'0999')from dual;
+                0123
+sql>select to_char(123,'9990') from dual;
+                 123
+
+$(dollar sign):-
+===============
+sql>select to_char(123,'$999')from dual;
+
+                $123
+sql>select to_char(sal,'L99g99g999g99','nls_currency=RS')from dual;
+
+| ENAME | TO_CHAR(SAL) |
+|-------+--------------|
+| SMITH | RS1,500.00   |
+| ALLEN | RS1,000,00   |
+| WARD  | RS650.00     |
+
+2:Converting datetype into charactertype:-
+=========================================
+sql>select to_char(sysdate,'day month'),to_char(sysdate,'day month','nls_date_language=french')from dual;
+
+| TO_CHAR()          | TO_CHAR()        |
+|--------------------+------------------|
+| SATURDAY SEPTEMBER | SAMEDI SEPTEMBRE |
+
+to_date():-
+==========
+It is used to convert date string into Oracle date type 
+select to_char('28/09/19','dd/mm/yy')+2 from dual;
+
+        28/09/19
+-----------------------------------------------------------------------------------------------------------
 
