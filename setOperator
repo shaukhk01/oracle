@@ -344,3 +344,173 @@ to_number():         |                 |              |
 to_number():-
 this function is used to converting string representing numaric value with format into without format. 
 
+Write a query which is used to add any number into the given string '$35.8';
+sql>select '$35.8'+3 from dual;
+ERROR:invalid number
+
+select to_number('$35.8'+3 from dual;
+
+ERROR:invalid number
+
+
+In oracle when ever we are converting string representing numaric  value with format into wihout format,
+then we must used second parameter as same as first parameter format By using predefined format element
+
+SOLUTION:
+---------
+sql>select to_number('$35.8','$99.9')+3 from dual;
+            38.8
+sql>create table test(ename varchar2(10),sal varchar2(10));
+sql>insert into test values(.....);
+
+sql>select * from test;
+
+| ENAME | SAL   |
+|-------+-------|
+| a     | $1000 |
+| b     | $2000 |
+| c     | $3000 |
+
+sql>select ename,sal,sal*12 annsal from test;
+
+ERROR:invalid number
+
+solution:
+---------
+
+sql>select ename,sal,to_number(sal,'$9999')*12 annsal from test;
+
+| ENAME | SAL   | ANNSAL |
+|-------+-------+--------|
+| a     | $1000 | 12000  |
+| b     | $2000 | 24000  |
+| c     | $3000 | 36000  |
+
+Example:
+--------
+sql>select to_number('a35.8','a99.9')+5 from dual;
+
+ERROR:invalid number format model
+
+to_char():-
+==========
+to_char() is a Overloding function which is use to convert number type into character type and also used to,
+convert date type into date string.
+
+Converting number type into character type.
+--------------------------------------------
+Write a query which is used to substitue any message inplace of null value within mgr column.
+
+sql>select nvl(mgr,'no manager')from emp;
+
+ERROR;invalid number 
+
+SOLUTION:-
+---------
+sql>select nvl(to_char(mgr),'no manager')from emp;
+
+            mgr
+        -----------
+            7902
+            7698
+            7698
+            no manager
+            7698
+            7788
+            ----
+            ----
+
+SYNTAX:-
+--------
+to_char(number,'format')
+
+Oracle provided following predefined format element for the second parameter of the to_char(number)to_char()
+
+predefined format elements:-
+----------------------------
+
+0---------->represents a number
+g---------->group seperator
+d---------->decimal indicator
+$---------->dollar sign
+L---------->Local currency
+0---------->leading zero
+,---------->comma
+.---------->decimal
+
+sql>select to_char(1234567,'99g99g999d99') from dual;
+
+12,34,567.00
+
+Local currency(L):-
+================                                  
+sql>select to_char(123,'L999')from dual;
+    $123
+National language support[NLS]:-
+==========================
+National language support allows users interacting with database with there native language and also                                
+Application run in different language enviroment's these nls parameter handle by database administrator
+Only. 
+                                                                       
+In oracle all predefined NLS parameter names and those parameter default values stored in Nls_session_parameters data dictionary. 
+
+
+sql>desc nsl_session_parameters;
+
+  Name
+----------
+  PARAMETER
+  VALUE
+
+sql>select PARAMETER,VALUE FROM nls_session_parameters;
+
+PARAMETER                   VALUE
+----------------------------------
+
+NLS_LANGUAGE                AMERICAN        
+NLS_CURRENCY                $
+NLS_DATE_FORMAT             DD-MON-YYY
+NLS_DATE_LANGUAGE           AMERICAN
+
+EXAMPLE:-
+-------
+
+sql>select sysdate from dual;
+    27-SEP-19
+
+sql>alter session set nls_date_format='DD/MM/YYYY HH:MI:SS';
+
+session altered.
+
+sql>select sysdate from dual;
+    27/09/2019          03:31:10
+
+sql>alter session set nls_date_format='DD-MON-YY';
+sql>select sysdate from dual;
+    27-SEP-19
+
+We can also use these nls parameter within in third parameter of the to_number,to_char,to_date() function
+
+SYNTAX:
+------
+to_char(number,'format','[nls parameter]')
+
+here nls parameter is a optional parameter  this parameter is must be specify within single quote[''] this
+parameter used by following syntax.
+
+SYNTAX:-
+--------
+nls parametername=value
+
+In oracle default currency is dollar if you want to display other then default currency then we must used,
+nls_currency parameter within 3rd parameter of the to_char() function.
+
+EXAMPLE:-
+--------
+select to_char(123,'L999')from dual;
+$123
+
+sql>select to_char(123,'L999','nls_currency=RS')from dual;
+        RS123
+
+
