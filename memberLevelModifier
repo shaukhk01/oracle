@@ -1,0 +1,427 @@
+                           +-----------------------+
+                           |  CLASS LEVEL MODIFIER |
+                           +-----------------------+
+***************************************************************************************************
+
+when ever we are writing our own classes we have to provide sum information about our class to the,
+JVM 
+like:whether this class can be accessable from any where or not 
+whethere child creation is possible or not,whether object creation is possble or not etc
+We can specify this information by using appropriate modifier
+
+By default public class modifier are:
+1:public
+2:default
+3:abstract
+4:final
+5:strictfp
+
+But for inner classes the applicable modifiers are 
+
+public modifier ++
+               +------------------+
+               |private,protected |
+               |static            |
+               +------------------+
+
+private class Test
+{
+    public static void main(String[]args)
+    {
+        System.out.println("Hello world");
+        }
+}
+ERROR:modified private not allowed here.
+---------------------------------------------------------------------------------------------------
+
+                     ACCESS SPECIFYER VS ACCESS MODIFIER
+                     ===================================
+public,private protected,default are considerd as spacifiers except these remaining are considered,
+as modifiers But this rule is applicable only for old languages like c++ But not in JAVA
+
+In java All are consider as modifier only there is no word like spacifier
+
+private class Test
+{
+    }
+ERROR:modifier private not allowed here
+
+
+Public classes:-
+================
+If a class declare as public then we can access that class from any where 
+
+Final Modifier:-
+===============
+
+Final is modifier applicable for classes,method,and variable 
+
+Final Method:-
+=============
+child class not have to redefined final method of parent class implementation is knowns as final method.
+
+What ever parent class  has by default available to the child through inheritance If the child not satisfied with,
+Parent method implementation then child is allowed redefined that method based on its requirement this,
+process is called Overriding 
+
+Example:
+
+class P
+{
+public void properties()
+{
+sop("cash+land+gold);
+}
+public final void marray()    
+{
+    sop("Annie");           
+  }
+}
+class c extends P               *******************************          
+{                       ********:marry() in c cannot override  ********  
+public void marry()  ***         marry() in p; override method         ***
+                        ********   in final                    ********  
+{                               *******************************          
+sop("can not change");
+}
+}
+
+Final class:-;
+==============
+If a class declare as final we can't extends funtionality of that class i.e is we can't create,
+child class for that class i.e inheritance is not possible for final classes
+
+EXAMPLE:-
+
+final class P
+    {
+
+
+    }
+class C extends P
+{
+
+} ERROR:cannot inherit from final 
+
+note1:
+Every method present inside final class is always final By default But every variable present     inside of final class need not be final 
+EXAMPLE:-
+--------
+final class P
+ {
+    static int x=10;
+    public static void main(String[]args)
+    {
+        x =777;
+        System.out.println(x)==>777[here you can see variable is changd]
+        }
+ }
+
+ The main advantage of final keyword is we can acheved security and we can provide unique implement-tation 
+ But the main disadvantage of final keyword is we are missing key benifit of oop's :inheritance(bec-ause of final class)and polymorphism because of final method hence if there is no specific require-ment then it is not recommended to use final keyword
+
+---------------------------------------------------------------------------------------------------
+
+                           +---------------------+
+                           |  abstract modifier  |
+                           |  =================  |
+                           +---------------------+
+
+abstract is modifier applicable for class and method But not for variables
+Even though we don't know about implementation still we can declare a method with abstract modifier
+i.e for abstract method only declare is available but not implementation.
+hence abstract method declaration should ends with semicoln [;]
+
+EXAMPLE:
+abstract public static void m1();-->valid
+abstract public static void m2() --> not valid
+
+child is responsible to provide implementation for parent class abstract method 
+EXAMPLE:
+--------             
+1:                   
+abstract class vehic e
+{                    
+abstract public int  etwheel();
+}                    
+ "above only declara ion not implementation
+2:                   
+"Below all are imple entation about abstract class method in child class
+class Bus extends ve icle
+{                                 +--------------------------------------------+
+    public int getwh el()  |getwheel() method belong to abstract  method|
+    {                             +--------------------------------------------+
+            return 7 
+      }              
+}                    
+3:                   
+class Auto extends v hicle
+{
+    public int getweel()
+    {
+       return 3;
+ }
+}
+
+By declaring abstruct method in the parent class we can provide Guide line to the child classes.
+such that which method compulsory child has to implement 
+
+abstract method never talk about implementation if any modifier talks about implementation then,
+it forms illegal combination with abstract modifier. 
+
+There are  following of variaous illegal combination of modifiers for method with respect to abstract.
+
+abstract class:-
+===============
+For any java class if we are not allowed to create an object [because of parital implementation or not complete information] 
+such of type of class we have to declare with abstract modifier
+i.e for abstract class instancetation is not possible
+
+EXAMPLE:-
+--------
+
+abstract class Test
+{
+public static void main(String[]args)
+{
+    Test t = new Test()
+    }
+} ERROR;Test is abstract cannot be instantiated
+
+                  +---------------------------------------+
+                  |  ABSTRACT CLASS vs ABSTRACT METHOD:-  |
+                  |  ==================================   |
+                  +---------------------------------------+
+1:if a class contain at least one abstract method then compulsory we should declare class as abstra-t otherwise we will get compile time error
+
+REASON:if a class contain one abstract method then implementation is not complete and hence it is,
+not recommended to create object to restrict object instancetiation compulsory we should declare,
+class as abstract
+
+2:even thow class doesn't contain any abstract method still we can declare class as abstract if,
+we don't want instancetiation i.e abstract class can contain 0 number of method also
+
+EXAMPLE:
+httpserverlet class is abstract but it dosen't contain any abstract method
+Every adapter class is recomended to declare as abstract but it dosen't contain any abstract method
+
+EXAMPLE:
+class P1
+{
+    public void m1();
+    }ERROR:missing method body or declare abstract
+
+Class p2
+{
+    public abstract void m1()
+    {
+    }
+}ERROR:abstract method cannot have body
+
+class P3
+{
+    public abstract void m1();
+}ERROR:P3 is not abstract and does not override abstract method m1() in p3
+
+if we are extending abstract class then for each and every abstract method of parent class we
+should provide implementation otherwise we have to declare child class as abstract in this case,
+next level child class is responsible to provide implementation 
+
+class P
+{
+    public abstract void m1();
+    public abstract void m2();
+    }
+class C extends P
+{
+    public void m1(){}
+    }ERROR:C is not abstract and doesn't override abstract method m2() in P
+                          +------------------------+
+                          |  Final VS abstract:-   |
+                          +------------------------+
+
+1:abstract method compulsory we should override in child classes to provide implementation where as we can't
+override final method hence final abstract combination is illegal combination for methods
+
+2:for final classes we can't create child class where as for abstract classes we should create child class,
+to provide implementation hence final abstract combination is illegal for classes
+
+3:abstract class can contain final method where as final class can't contain abstract method
+
+
+abstract class Test           | final class Test
+{                             | {   
+    public final void m1()    |   public abstract void m1();
+    {                         | }==>not valid
+    }                         |
+}==>valid                     |
+                              |
+note2:
+it is highly recommended to use abstract modifier because it promots several oops features like inheritance  and polimorphism.
+-----------------------------------------------------------------------------------------------------------
+                     +---------------------------------+
+                     | strictfp[STRICT FLOATING POINT] |
+                     +---------------------------------+
+1:Introduced in 1.2V version
+2:we can declare strictfp for classes and method But not for variable
+
+Usually the result of floating point arthmatic is varied from platform to platform if we want platform,
+independent result for floating point arithmatic then we should go for strictfp modifier
+
+strictfp method:-
+================
+If a method declare as strictfp all floating point calculation in that method has to follow IEEE 754standard
+so that we will get platform independent result. 
+
+abstract modifier never talk about implementation where as strictfp method always talk about implementation
+hence abstract strictfp combination is illegal for method
+
+strictfp class:-
+==============
+if a class declare as strictfp then every floating point calculation present in every conceret method has ,
+to follow IEEE 754 standard so that we will get platform independent results 
+
+we can abstract strictfp combination for classes i.e abstract strictfp combination is legal for clesses
+But illegal for method 
+
+EXAMPLE:-
+abstract strictfp class Test ==>allowed
+{
+    abstract strictfp void m1()==>not allowed
+}
+abstract strictfp m1(); is illegal combination 
+
+-----------------------------------------------------------------------------------------------------------
+                               +------------------------------------------------------+
+                               | Member Modifiers(mehod or variable level modifiers)  |
+                               +------------------------------------------------------+
+                       
+
+1:-public member:-
+
+If a member declare as public then we can access that member from anywhere  but corresponding should be
+visble i.e is before checking member visibility we have to check class visibility.
+
+Example:-
+--------                                     |  packages pack2;
+package pack1;                               |  import pack1.A
+                                             |  class B
+class A                                      |  {
+{                                            |     public static void main(String[]args)
+    public  void m1()                        |       {
+        SOP('A CLASS METHOD');               |              A a = new A();  
+ }                                           |              a.m1();}}
+$>java -d A.java==>allowed                   |        $>javac -d B.java==>Error
+                                             |
+
+                                            
+In the above example even thow m1 method is public we can't access from outside packages Because ,
+corresponding class A is not public i.e if both class and method are public then only we can access the ,
+method from outside packages 
+
+2:Default members:-
+=================
+
+If a member declare as default then we can access that member only within the current packages from outside, of the packages we can't access hence default access known as packages level access 
+
+3:Private members:-
+=================
+
+If a member is private then we can access that member only within the class i.e from out side of the class
+we can't access 
+
+Abstract method should be available to the child class to provide implementation where as private method,
+are not available to the child classes to provide implementation.
+hence private abstract combination is illegal for method
+
+4:Protected members:(the most missunderstood modifier in java)
+====================
+
+If a member declare as procted then we can access that member anywhere within the current packages but,
+only in child classes of outside packages 
++------------------------
+protected =default+kids  
++------------------------
+we can access protected member's within the current packages anywhere either by using parent reference or
+by using child reference.
+But we can access protected members in outside packages only in child classes and we should used child 
+references only.i.e parent references cannot be used to access protected members' from outside packages.
+
+Example:-
+--------                                                    |package pack2;
+                                                            |import pack1.A
+packages pack1;'this will create auto'                      |class C extends A
+                                                            |{
+public class A                                              |   public static void main(String[]args)
+{                                                           |     {
+    protected void m1()                                     |           A a = new A();
+    {                                                       |             a.m1(); ==>not allowed error
+    System.out.println("this most missunderstood modifier");|           C c = new C();
+    }                                                       |              c.m1(); ==>Allowed
+                                                            |           A a1 = new c();
+}                                                           |             a1.m1(); ==>not allowed
+class B extends A                                           |
+{                                                           |
+  public static void main(String[]args)                     |
+  {                                                         |
+       A a = new A();                                       |
+       a.m1(); ==>allowed                                   |
+       B b = new B();                                       |
+       b.m1(); ==>allowed                                   |
+       A a1 = new A();                                      |
+       a1.m1();==>allowed                                   |
+       }                                                    |
+ }
+        
+
+we can access protected member from outside package only in child classes and we should use that chilclass,
+references only 
+from D class if you want to access we should use D class references only
+
+Example:-
+--------
+packages pack2;
+import pack1.A;
+class C extends A
+{
+}
+class D extends C
+{
+    public static void main(String[]args)
+    {
+        A a  = new A();
+          a.m1()
+        C c  = new C();
+          c.m1();
+        D d  = new D();
+          d.m1()'allowed only this'
+        A a1 = new C();
+          a1.m1()
+        C c1 = new C();
+          c1.m1();
+    }
+
+}
+
+summary table of private,default,protected,public modifier
+*************************************************************************************^
+| visibility                           | private | default | proceted      | public  |
+|--------------------------------------+---------+---------+---------------+---------|
+| within the same class                | allowed | allowed | allowed       | allowed |
+|--------------------------------------+---------+---------+---------------+---------|
+| within the child class of same pack  | not     | allowed | allowed       | allowed |
+|--------------------------------------+---------+---------+---------------+---------|
+| from non-child class of same package | not     | allowed | allowed       | allowed |
+|--------------------------------------+---------+---------+---------------+---------|
+| from child class of outside packag   | not     | not     | allowed c-ref | allowed |
+|--------------------------------------+---------+---------+---------------+---------|
+| from non-child class of outside pack | not     | not     | not           | allowed |
+**************************************************************************************
+
+The most restricted access modifier is private
+The most accessable modifier is public.
+
+private < default < protected < public
+
+Recommended modifier for data member [variable is private]
+Recommended modifier for method is public .
