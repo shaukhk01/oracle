@@ -1,0 +1,527 @@
+                              Regular Expression:
+                              ===================
+Regular expression are used to search or replace strings regular expression are also called as posix notatio-n Oracle 10g introduced reglar expression.
+Regular expression having special character with special meaning these special character also called as,
+meta character.
+
+note1:
+In oracle regular expression work with char,varchar,varchar2,col datatypes.But regular expression does not,
+work with Long datatype.
+
+Oracle having following predefined regular exprssion function. 
+
+1:regexp_like()
+2:regexp_instr()
+3:regexp_substr()
+4:regexp_replace()
+5:regexp_count()(oracle 11g)
+
+Meta character:-
+================
+Meta character are special character's having special meaning
+
+meta character:-
+----------------
+
+.--------->matches any single character
+^--------->begining of line anchor
+$--------->end of the line anchor
++--------->matched one or more occurences of the preceding character
+*--------->matched zeor or more occurence of the preceding character
+?--------->matched zeor or one occurence of preceding character
+\--------->escape character         
+[]-------->matches list of values[abc]+->matched either a or b or
+                                      |                         
+                                 [0-9]|->matches 0 to 9                          
+                                 [a-z |->matches a to z                          
+
+{m}------>matches exact m occurence
+{m,n}---->matches atleast m to n occurence
+[^]------>negation ex;[^abc]-->matches other then abc
+
+\d------->matches digit
+\s------->matches spaces
+\w------->matches word
+
+[[:upper:]]-->matches uppercase
+[[:lower:]]-->matches lowercase
+[[:digit:]]-->matches digits
+[[:alnum:]]-->matches alpha numeric
+[[:alpha:]]-->matches alhabets
+
+|-------->(or)ex:a|b-->matches either a or b
+\n------->backreference-->ex:\1-->represent first group
+                              \2-->represent group
+(.....)------->matches subgroups
+
+regexp_like():
+===========
+This function is used to search string based on regular expression pattern 
+
+syntax:-
+-------- 
+regexp_like(colname,'pattern')
+
+1)WRITE A QUERY TO DISPLAY THE EMPLOYEE WHO ENAME CONTAIN AM(OR)AR STRING FROM EMP TABLE BY USING LIKE OPTR.
+
+sql>select * from emp where ename like '%AM%' or ename like '%AR';
+
+2)WRITE A QUERY TO DISPLAY EMPLOYEE WHO ENAME CONTAIN AM OR AR  STRING FROM EMP TABLE BY USING REGEXP_LIKE() 
+sql>select * from emp where regexp_like(ename,'AM|AR');
+
+3)WRITE A QUERY TO DISPLAY EMPLOYEE WHO'S ENAME START WITH EITHER A OR B FROM EMP TABLE BY USING regexp_like() FUNCTION.
+
+sql>select * from emp where regexp_like(ename,'^A|^B');
+
+4)WRITE A QUERIES WHOS ENAME END WITH EITHER N OR S FROM EMP TABLE BY USING regexp_like() function.
+
+sql>select * from emp where regexp_like('N$|S$')
+
+5)WRITE A QUERY TO DISPLAY EMPLOYEE WHOS ENAME SECOND LETTER IS EITHER M OR L OR A by using regexp_like()
+
+sql>select * from emp where regexp_like ('^.[MLA]');
+
+6)WRITE A QUERY TO DISPLAY EMPLOYEE WHO'S ENAME SECOND LETTER IS NOT A MLA. BY USING regexp_like.
+
+sql>select * from emp where regexp_like(ename,'^.[^MLA]';
+
+note:
+regexp_like() having optional third parameter this parameter return's match option 
+
+syntax:-
+--------
+regexp_like(ename,'pattern',[match option]
+                                  |
+                                  |
+                       +----------+-------------+
+                       |                        |
+                       |                        |
+                case sensitive                  case incensitive
+                      (c)                             (i)
+                    default
+EXAMPLE:-
+--------
+sql>insert into emp(empno,ename)values(1,'smith');
+sql>select * from emp;
+sql>select * from emp where regexp_like(ename,'^S');
+
+    ENAME
+----------
+    SMITH
+    SCOTT
+sql>select * from emp where regexp_like(ename,'^S','c');
+    
+    ENAME
+----------
+    SMITH
+    SCOTT
+sql>select * from emp where regexp_like(ename,'^s','i');
+
+    ENAME
+----------
+    smith
+    SMITH
+    SCOTT
+EXAMPLE2:
+--------
+sql>create table test(phoneno varchar(10));
+sql>insert into test values('123.456.789.5786');
+
+sql>insert into test values('534.678.987');
+sql>insert into test values('345.678.78');
+sql>commit;
+
+sql>select * from test;
+
+    PHONENO
+----------    
+123.456.789.5786
+534.678.987
+345.678.456.78
+
+6)WRITE A QUERY DISPLAY THOSE PHONE NUMBER FROM ABOVE TABLE BASED ON FOLLWINGG REGULAR EXPRESSION PATTERN,
+BY USING regexp_like ()
+
+pattern:-
+3digits.edigits.endwith 3digits
+
+sql>select * from test where regexp_like(phoneno,'\d{3}.\d{3}.\d{3}$');
+[$ means ends with ]
+    PHONENO
+------------
+534.678.987
+
+or
+
+sql>select * from test where regexp_like(phoneno,'[[:digit:]]{3}.[[:digit]]{3}.[[:digit:]]{3}$')
+
+7)WRITE A QUERY BY USING FOLLOWING TABLE MATCH ATLEAST TWO a and zero or more bs and atleast one c BY USING regexp_like()
+
+sql>create table test(ename varchar(10));
+sql>insert into test values('aaaabccc');
+
+sql>insert into test values('aabbbbc');
+sql>insert into test values('aacc');
+
+sql>insert into test values('a');
+sql>select * from test;
+sql>insert into test values('*');
+
+    ENAME
+----------
+    aaaabcc
+    aabbbbcc
+    aacc
+    a
+    *
+
+sql>select * from test where regexp_like(ename,'aa+b*c+');
+
+    ENAME
+------------
+    aaaabcc
+    aabbbbc
+    aacc
+
+Escape character:-[\]
+=================
+In regular expression every meta character having special meaning if you want to escape special meaning of,
+the meta character then we are using escape character \[back slash]in front of the  meta character.
+
+Example:-
+--------
+sql>select * from emp where regexp_like(ename,'\*');
+    
+
+    ENAME
+------------
+      *
+sql>create table test1(ename,varchar2(10));
+sql>insert into test1 values('1. abc');
+
+sql>insert into test1('1.  abc');
+sql>insert into test1('2.   abc');
+sql>insert into test1('3.abc');
+sql>select * from test1;
+
+
+sql>commit;
+
+8)WRITE A QUERY TO DIPSLY THE EMPLYEE FROM THE ABOVE TABLE BASED ON FOLLOWING PARRTERN BY USING regexp_like()
+
+pattern:-
+--------
+anydigit.one or more spaces abc
+
+sql>select * from test1 where regexp_like(ename,'\d\.\s+abc');
+
+        ENAME
+---------------
+    1. abc
+    2.  abc
+    3.   abc
+regexp_instr();
+==============
+
+This function always return number data type it return's position within given string based on the spacifiedregular expression pattern.It is also same as Oracle predefined instr() function But this function having,
+one exptra 5th parameter this parameter spacifies return option This return option having two integer value.
+either 0 or 1 By default this return option having zero
+here 0 represent current postion of the spacified data where as 1 represent next immediate character
+position from the spacified current position
+
+syntax:-
+--------
+regexp_instr(columnname,'pattern','searching number of occurence, returnn-option)
+                                   |             |                    ^
+                                   |             |                    |
+                                   |             |                    |
+                                   +----------------------------------+
+                                                numbers
+EXAMPLE:-
+--------
+sql>select regexp_instr('abcdefg5kmn','[[:digit:]]',1,1)from dual;
+
+                8
+sql>select regexp_instr('abcdefg5kmn','[[:digit:]]',1,1,0)from dual;/here 0 is current occurences
+                                                           
+sql>select regexp_instr('abcdefg6kmn','[[:digit:]]',1,1,1)from dual;/here 1 is next onwards occurenc pos
+
+                9
+9)WRITE A QUERIES WHICH IS USED TO DISPLAY VAID MAIL ID FROM THE FOLLOWING TABLE BY USING regexp_instr().
+
+sql>create table test2(mailid varchar(10));
+sql>insert into test('abc@gmail.com');
+sql>insert into test('xyz@gmail.com');
+sql>insert into test('pqr @gmail.com');
+sql>insert into test('zzz @gmail.com');
+sql>commit;
+
+sql>select * from test;
+
+    MAILID
+---------------
+    abc@gmail.com
+    xyz@gmail.com
+    pqr @gmail.com
+    zzz @gmail.com
+
+sql>select * from test  where regexp_instr(mailid,'@')>0 and regexp_instr(mailid,' ')=0
+
+        MAILID
+----------------
+    abc@gmail.com
+    xyz@gmail.com
+
+regexp_substr():-
+================
+
+It will extract portion of the string from the given string based on the spacified regular expression
+pattern it is also same as Oracle predefined substr()function.
+
+syntax:-
+--------
+regexp_substr(colname,'pattern',starting occurences,[matched-option])
+                                 |                       
+                                 |
+                                 +-position
+Example:-
+--------
+
+sql>select regexp_substr('oracle12c','[0-9]')from dual;
+                
+                1
+sql>select regexp_substr('oracle12c','[0-9]+')from dual;
+        
+                12
+
+sql>select regexp_substr('abc_xyz@gmail.com','[^@]+')from dual;
+                
+                a
+
+sql>select regexp_substr('abc_xyz@gmail.com','[^@]')from dual;
+                
+                abc_xyz
+
+sql>select regexp_substr('abc_xyz@gmail.com','[^@]+',1,2)from dual;
+
+                gmail.com
+
+10)WRITE A QUERY WHICH IS USED TO RETERIVE FIRST SUBSTRING FROM THE FOLLOWING GIVEN STRING BY USING regexp_substr() function. 
+given string:-'200 oracle abc,holiday,xyz'
+
+sql>select regexp_substr('200 oracle abc,holiday,xyz','[^,]+',1,1) from dual;
+                                                              | |
+                200 oracle abc                                | +----------------first string
+                                                              +--first index-
+
+
+sql>select regexp_substr('200 oracle abc,holiday,xyz','\w+',1,1)from dual;
+
+                200
+
+sql>select regexp_substr('200 oracle abc,holiday,xyz','\w+,1,2)from dual;
+                                                             |
+                oracle                                       |
+                                                             +-----here 2 treated as word
+
+
+
+regexp_replace():-
+================
+
+This function also used to replaces single character with string or also replaces string by string based,
+on regular expression pattern.
+
+Examplel:-
+---------
+
+sql>select regexp_replace('abc5xyz5pqr','[[:digit:]]','oracle')from dual;
+
+            abcoraclexyzoraclepqr
+
+
+backreferences and subgroups:-*
+-----------------------------
+
+In regular expression if you want to divide string into no of subgroups then we must spacified subgroup,
+pattern within parenthese and also these subgroups are  control by using back references in regular
+exression backreferences represented by using \n
+
+here n represent number and also here \b 1 represent first subgroup,and also \2 represent second subgroup
+
+Generally In oracle these backreferences and subgroup are used regexp_replace() function 
+
+syntax:-
+--------
+
+regexp_replace('string','(pattern)(pattern)','backreferences')
+
+Example:-
+---------
+
+sql>select regexp_replace('oracle12c','([[:alpha:]]+)([[:digit:]]+.)','\1       \2')from dual;
+
+
+                oracle              12c
+
+sql>select regexp_replace('oracle12c','([[:alpha:]]+)([[:digit:]]+.)','\2           \1')from dual;
+
+
+               12c                  oracle
+
+
+regexp_count():-(11g)
+===============
+
+Oracle 11g introduced regexp_count() function which is used to count no of occurences of the spacified chara-cter within given string based on spacified pattern.
+
+syntax:-
+------
+regexp_count('string','pattern',[searching from position]);
+                                    |
+                                    |
+                                    |
+                                    +------number
+
+Example:-
+--------
+
+sql>select regexp_count('oracle database','a')from dual;
+
+                    4 [a occurences 4 times]
+sql>select regexp_count('oracle database','a',5)from dual;
+                                              |
+                    3                         |
+                                              +----start 5th onwards
+
+
+Escape function used in like operator:-
+====================================== 
+
+In oracle whenever column having  wildcard character's and also when we are trying to reterive data By 
+using wildcard character then oracle server return wrong result Because here whilecard character having 
+special meaning to overcome this problem for escapcaping special meaning of the wildcard character then,
+Oracle provided  escape function along with like operator.
+
+syntax:-
+--------
+select * from tablename where colname like 'pattern' escape 'escape character';
+
+here escape character lenght must be 1 bytes 
+
+1):WRITE A QUERY TO DISPLAY THE EMPLOYEE WHO'S ENAME START WITH S_ FROM EMP TABLE BY USING LIKE OPERATOR
+
+sql>insert into emp(empno,ename)values(1,'S_MITH');
+sql>select * from emp;
+sql>select * from emp where ename like 'S_%';
+
+        ENAME
+------------------
+        S_MITH
+        SMITH
+        SCOTT                                       
+For escaping wildcard special meaning then we are using escape function Along with escape function we must
+specifiy any Escape character throw this escape character only we are escaping wildcard character special-
+meaning By using following construction.
+
+
+construction:-
+-------------
+which wildcard character special meaning if you want to escape then we must used escape character Before
+wildcard character within character pattern. 
+
+solution:-
+---------
+sql>select * from emp where ename like 's1_%' escape '1';
+
+            S_MITH
+
+Execution:-
+---------
+1_===>here after escape character  underscore tread  as underscore,not treated as wildcard character
+
+2):WRITE A QUERIES TO DISPLAY THE EMPLOYEE WHOS ENAME START WITH S_ FROM EMP TABLE BY USING regexp_like().
+
+sql>select * from emp where regexp_like(ename,'S_');
+
+3):WRITE A QUERIES TO DISPLAY THE EMPLOYEE WHO'S ENAME START WITH S__ By using like operator.
+
+sql>insert into emp(empno,ename)values(2,'s_ _ MITH');
+
+sql>select * from emp;
+sql>select * from emp where ename like 's__%';
+
+    ENAME
+---------------
+    S_MITH
+    S__SMITH
+    SMITH
+    SCOTT
+
+solution:-
+---------
+
+sql>select * from emp where ename like 's?_?_%' escape '?';
+    
+    ENAME
+---------------
+    S__MITH
+
+
+Execution:-
+----------
+?_===>here after escape character underscore treated as underscore,not treatd as wildcard character
+
+null value function:-
+====================
+
+Oracle having following null value function.
+
+1:nvl()
+2:nvl2()
+3:nullif()
+4:coalesce()
+
+nvl2():-
+======
+Oracle 9i introduced nvl2() this function accept three parameter. 
+
+syntax:-
+--------
+nvl2(exp1,exp2,exp3);
+
+here if one exp1 is null  then it will return expr3 where as if expr1 is not null then it will return expr2
+
+sql>select nvl2(null,20,30)from emp;
+        30
+sql>select nlv2(10,20,30)from dual;
+        20
+
+nullif():-
+========
+Oracle 9i introduced nullif() function this function always accept two parameter.
+
+syntax:-
+-------
+nullif(exp1,exp2);
+here if exp1 same as expr2 then this function return null where as if expr1 is != then this function return expr1
+
+Example:-
+--------
+sql>select nullif(10,10)from dual;
+            null
+sql>select nullif(10,20)from dual;
+
+            10
+
+
+4):Write a quries who are getting salary less then 2000 from emp table and also display all 14 row's from emp table without using where condition and also display null valuees inplace of more then 2000 salary within sal column and also display less then 2000 thousand salary within salary column by using nullif,greatest()
+
+sql>select ename,nullif(sal,greatest(2000,sal)) from emp
+
+    ENAME               nullif()
+-----------------------------------
+    SMITH               800
+    ALLEN               1000
+    WARD                ----
+    JONES              ------ 
