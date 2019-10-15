@@ -1,5 +1,5 @@
-                                                Types Of Variable
-                                                =================
+                                            Types Of Variable
+                                            =================
 Division1:
 
 Based on type of value represented by a variable  all variable divided into two types.
