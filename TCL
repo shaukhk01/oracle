@@ -1,0 +1,275 @@
+
+Transaction control language(TCL):-
+============================
+Transaction:-
+it is logical unit of fork in between two point.
+==>Oracle having two type of transaction commands these are.
+
+1:commit:
+2:savepoint
+
+commit:-
+------
+This command is used to save the transaction permanently into database. 
+In all relational database by default all DDL command are automaticlly  commited.
+
+note:-
+-----
+In all relational database before roleback is transaction we must use commit command.
+Example:-
+--------
+sql>create table test(sno number(10));
+sql>insert into test values(.....);
+
+sql>commit;
+
+sql>select * from test;
+        1
+        2
+        3
+        4
+
+sql>delete from test;
+
+sql>select * from test;
+    no row selected
+sql>rollback;
+
+sql>select * from test;
+        1
+        2
+        3
+        4
+
+
+note:
+In al relational database if you want to view dml transaction value into another session then we must use
+commit command.
+Example:-
+--------
+
+| sql>conn scott/tiger                 | sql>conn scott/tiger |
+|--------------------------------------+----------------------|
+| sql>create table test(sno number(10) | session2             |
+| sql>insert into test values(50)      | select * from test   |
+| sql>select * from test;              | no row selected      |
+| 50                                   | select * from test   |
+| sql>commit                           | 50                   |
+
+savepoint:-
+=========
+it is logical mark in between transaction.
+Syntax:-
+-----
+savepoint savepointname;
+
+rollback to particular save point:-
+=================================
+syntax:-
+-----
+rollback to savepointname;
+
+rollback:-
+--------
+This command is used to undo transaction from memory.
+Example:-
+-------
+sql>insert into emp(empno)values(1);
+
+sql>update emp set sal=sal+100 where ename='SMITH';
+
+sql>savepoint s1;
+
+sql>insert into emp(empno)values(2);
+
+sql>update emp set sal=sal+100 where ename='ALLEN';
+
+sql>savepoint s2;
+sql>insert into emp(empno)values(3);
+
+sql>rollback to s1 ;
+
+sql>commit;
+sql>select * from emp;
+
+LOCKS:-
+=======
+Locking is mechanism which is used to prevent unauthorized access for our resource[table]
+
+Oracle having two types of locks these are.
+1)Row level locks
+2)Table level locks
+
+Row level locks:-
+===============
+Oracle 6.0 introduced row level locks in this method we are locking set of rows by using for update clause
+This clause used in select statement.
+Syntax:-
+-------
+select * from tablename where condition for update[nowait];
+
+whenever we are performing locks then another user queriing the data but then cannot perform DML operation
+and also whenever we are using commit or rollback command then automatically locks are release. 
+
+| sql>conn scott/tiger                  | sql>conn murali/murali                                |
+|---------------------------------------+-------------------------------------------------------|
+| sql>select * from emp where detpno=10 | sql>update scott.emp set sal=sal+100 where deptno=10; |
+    for update
+| sql>                        | [we cannot perform DMLS because of locks] |
+| commt,[for releasing locks] |
+
+
+nowait:-
+======
+
+nowait is optional class used along with for update clause whenever we are using nowait optional clause
+then oracle server return controle to the current session if another user not releasing locks also 
+in this case oracle server returns error 
+ORA-00054:resource busy and acquire with NOWAIT spacified 
+
+Example:-
+-------
+| sql>conn scott/tiger    | sql>conn murali/murali |
+|-------------------------+------------------------|
+| select * from emp where |                        |
+depno=10 for update now wait                       |
+| Error:00054:Resource is busy | select * from scott.emp where deptno=10 for update;
+
+Default locks:-
+=============
+In all relational database whenever we are using DML transactions then database server internally uses
+default locks The default locks are also called as Exclusive locks.
+These Default locks also automatically released when we are using commit or rollback command.
+
+Example:-
+-------
+    session 1                        session 2
+|
+| sql>scott/tiger                 | sql>conn scott/tiger                             |
+|---------------------------------+--------------------------------------------------|
+| sql>update  emp set sal=        | sql>update emp set sal=sal+100
+| sal+100 where deptno=10;        | where deptno=10;                                 |
+| sql>commit;[for releasing locks | [we cannot perform DMLS because of default locks |
+
+
+deadlock:-
+=========
+In oracle whenever two or more session are waiting for data and those session are locked by each other
+then deal lock occure,Deadlock is a one type of locking mechanism these deadlock also automatically release,when we are using commit or rollback command.
+
+In oracle when ever 2 or more session are waiting for same resource at same time and those session also locked each other 
+        then oracle server returns an error 
+        ORA:-00060:deadlock detectd while waiting for resource.within first session
+Example:-
+--------
+        session1                              session2
+| sql>scott/tiger                     | sql>conn scott/tiger           |
+|-------------------------------------+--------------------------------|
+| sql>update emp set sal=sal+100      | sql>update emp set sal=sal+100 |
+| where deptno=10;                    | where deptno=20                |
+| 3 rows updated                      | 5 rows updated                 |
+|-------------------------------------+--------------------------------|
+| sql>update emp set sal=sal+100      | sql>update emp set sal=sal+100 |
+| where deptno=20;                    | where deptno=10                |
+| ORA:-00060:Deadlock detected        |                                |
+| while waiting for resource          |                                |
+|-------------------------------------+--------------------------------|
+| sql>commit;[for releasing deadlock] |                                |
+
+
+Table Level Locks:-
+==================
+In this method we are locking a table table level locks are handle by database adminstrator only
+Oracle having following types of table level locks.
+
+These are:
+1:share lock.
+2:Exclusive lock.
+
+share lock:-
+----------
+When we are using shared lock then another user query the data but they cannot perform DML operation and
+also at a time no of users block the resource these locks automatically released when we are using commit,
+or rollback commands.
+
+Syntax:-
+------
+lock table tablename in share mode;
+
+| sql>conn scott/tiger              | sql>conn murali/murali                              |
+|-----------------------------------+-----------------------------------------------------|
+| sql>lock table emp in share mode; | sql>select* from scott.emp;                         |
+|                                   | sql>lock table scott.emp share mode;                |
+|                                   | sql>update scott.emp set sal=sal+100 where deptno10 |
+| commt;[for Releasing locks]       | cannot perform DML                                  |
+
+Exclusive  Lock:-
+---------------
+When we are using Exclusive lock then another user query the data but they cannot perform DML operation
+and also at a time only one user block the resource 
+
+Syntax:-
+-----
+lock table tablename in exclusive mode;
+
+| sql>conn scott/tiger                  | sql>conn murali/murali                    |
+|---------------------------------------+-------------------------------------------|
+| sql>lock table emp in exclusive mode; | sql>select  * from scott.emp;             |
+|                                       | sql>lock table scottt.emp in shared mode; |
+| sql>commit;[for releasing locks       | not working                               |
+
+
+Global Temporary table:-
+======================
+Oracle provided special type of tables called global temporary tables which is used to store data temporary
+and also used those table globally these global temporaries table are handle by database adminstrator only 
+
+Generally whenever we are performing more then we are using global tempories table for improve perfromance 
+of the applicaton.
+
+Oracle having two types of global temporaries table these are:
+
+1:Transaction spacific global temporary table.
+2:Session spacific global temporary table.
+
+1:Transaction specific global temporary table:-
+--------------------------------------------
+In these type of global temporary table data is available up to commiting the transaction i.e when ever we 
+are using commit command then automatically data is deleted.
+
+Syntax:-
+-----
+create global temporary table tablename(col1 datattype(size),......)on commit delete rows;
+Example:-
+-------
+sql>create global temporary table gtt1(sno number(10)) on commit delete rows;
+
+sql>insert into gtt1 values(80);
+sql>select * from gtt1;
+
+        SNO
+      --------
+        80
+sql>commit;
+sql>select * from gtt1;
+no rows selected
+
+Sesion spacific global temporary table:-
+--------------------------------------
+In these type of table meta data is global and also normal data is private i.e those user connect to the,
+database those all users accessing a table but session user allowed to view session spacific data that's
+why here data it temporary Generally if you want to restirct data from other session then must use on commitpreserve rows clause,within global temporary table.
+
+Syntax:-
+------
+create global temporary table tablename(col1 datatype(size),... on commit preserve rows;
+
+| sql>conn scott/tiger                     | sql>conn scott/tiger            |
+|------------------------------------------+---------------------------------|
+| sql>create global Temporary table gtt2   | sql>select * from gtt2;         |
+| (sno number(10)) on commit preserve rows | no row selected                 |
+| sql>insert into gtt2 values(1)           | sql>insert into gtt2 values(2); |
+| sql>commit;                              | sql>commit;                     |
+| sql>select * from gtt2;                  | sql>select * from gtt2;         |
+| sql>select * from gtt2;                  | sno 2
+| 1
