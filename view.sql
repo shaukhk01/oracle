@@ -1,68 +1,88 @@
-                                      view
-                                      ====
+                                          view
+                                          ====
 
-View is a database object which is used to provide table level security views are created from table those
-table are also called as base  table.
+"VIEW IS A DATABASE OBJECT WHICH IS USED TO PROVIDE TABLE LEVEL SECURITY VIEWS ARE CREATED FROM TABLE THOSE
+"TABLE ARE ALSO CALLED AS BASE  TABLE.
 
-note:[in baking sector we are using database concept only]
+note:[in baking sector we are using database concept ]
 
-Generally view does not store any data thats' why view is also called as virtual table or window of a table.
-In ALl relational databases based on the table view are Categorise into two view these are.
+"GENERALLY VIEW DOES NOT STORE ANY DATA THATS WHY VIEW IS ALSO CALLED AS VIRTUAL TABLE OR WINDOW OF A TABLE
+IN ALL RELATIONAL DATABASES BASED ON THE TABLE VIEW ARE CATEGORISE INTO TWO VIEW THESE ARE.
 
 1:SIMPLE VIEW
 2:COMPLEX VIEW OR JOIN VIEW
 
-Simple view is a view which is created from only one base table where as complex view is a view which is created from multiple base table 
+"SIMPLE VIEW IS A VIEW WHICH IS CREATED FROM ONLY ONE BASE TABLE WHERE AS COMPLEX VIEW IS A VIEW WHICH IS 
+"CREATED FROM MULTIPLE BASE TABLE 
 
 SIMPLE VIEW
 -----------
 syntax:
 -------
 create [or replace] view viewname as select * from tablename where condition;
-DML OPERATION ON SIMPLE VIEW
-----------------------------
-In oracle we can also perform dml operation through simple view to base table based on following restriction.
-these are
 
-1:if a simple view having group function,group by clause distinct, rownum,set operators,joins then we can not perform dml operation though simple view to base table.
+DML OPERATION ON SIMPLE VIEW:
+============================
+"IN ORACLE WE CAN ALSO PERFORM DML OPERATION THROUGH SIMPLE VIEW TO BASE TABLE BASED ON FOLLOWING RESTRICTION.THESE ARE
 
-2:We must include base table primary key or not null column into the view then only we are allowed to perform insertion operation.through simple view to base table.[[only 10 downwards not 10onwards]]
+"IF A SIMPLE VIEW HAVING GROUP FUNCTION[GROUP BY CLAUSE DISTINCT, ROWNUM,SET OPERATORS,JOINS] THEN WE CAN 
+NOT PERFORM DML OPERATION THOUGH SIMPLE VIEW TO BASE TABLE."
+
+WE MUST INCLUDE BASE TABLE PRIMARY KEY OR NOT NULL COLUMN INTO THE VIEW THEN ONLY WE ARE ALLOWED TO PERFORMINSERTION OPERATION.THROUGH SIMPLE VIEW TO BASE TABLE.[[ONLY 10 DOWNWARDS NOT 10ONWARDS]]
 
 Example:
-sql>create or replace view v1 as select * from emp where deptno=10;
-sql>select * from v1;
+-------
+  +-----------------------------------------------------------------------+
+  | sql>create or replace view v1 as select * from emp where deptno=10;   |
+  | sql>select * from v1;                                                 |
+  +-----------------------------------------------------------------------+
 
-sql>insert into v1(empno,ename,deptno)values(1,'murli',30);
-example2:
-sql>create or replace VIEW v2 as select ename ,sal,deptno from emp where deptno=10;
-sql>select * from emp v2;
-sql>insert into v2(ename,sal,deptno)values('abc',1000,10);
+SQL>INSERT INTO V1(EMPNO,ENAME,DEPTNO)VALUES(1,'MURLI',30);
 
-In all relational databases whenever we are creating a view then automatically view definition are (select statement) automatically permanently stored in database in oracle if you want to view these definition then we are using text properties from user_views data dictionary 
-Example:
-desc user_views;
-sql>select text from user_views where view_name='V1';
+  +----------------------------------------------------------------------------------------+
+  | EXAMPLE2:                                                                              |
+  | --------                                                                               |
+  | sql>create or replace VIEW v2 as select ename ,sal,deptno from emp where deptno=10;    |
+  |                                                                                        |
+  | sql>select * from emp v2;                                                              |
+  |                                                                                        |
+  | sql>insert into v2(ename,sal,deptno)values('abc',1000,10);                             |
+  +----------------------------------------------------------------------------------------+
 
-TEXT
---------------------------------------------------
-select "SNO","NAME" from base
+****************************************************************************************************
 
-Generally in all relational databases we can also used views for simplifying complex query purpose ie
-regular usedly complex query. are putting in view then only we are requesting views whenever necessary by using select * from viewname
+"IN ALL RELATIONAL DATABASES WHENEVER WE ARE CREATING A VIEW THEN AUTOMATICALLY VIEW DEFINITION ARE 
+"[SELECT STATEMENT] AUTOMATICALLY PERMANENTLY STORED IN DATABASE.
 
-Generally in all relational databases if any view having function are expression then we must create ALIAS
--NAME for those function or expression
-Otherwise database server return ERROR
+"IN ORACLE IF YOU WANT TO VIEW THESE DEFINITION THEN WE ARE USING TEXT PROPERTIES FROM USER_VIEWS 
+"DATA DICTIONARY. 
 
-Example1:
+   +------------------------------------------------------+
+   |Example:                                              |
+   |--------                                              |
+   |desc user_views;                                      |
+   |sql>select text from user_views where view_name='V1'; |
+   +------------------------------------------------------+
 
-sql>CREATE OR REPLACE VIEW V1 AS SELECT DEPTNO,MAX(SAL)FROM EMP GROUP BY DEPTNO;
-ERROR:must name this expression with a column alias
-[Alias name of expression[Function,rownum,join,set,etc]]
 
-solution:
----------
-sql>CREATE OR REPLACE VIEW V1 AS SELECT DEPTNO,MAX(SAL)A FROM EMP GROUP BY DEPTNO;
+"GENERALLY IN ALL RELATIONAL DATABASES WE CAN ALSO USED VIEWS FOR SIMPLIFYING COMPLEX QUERY PURPOSE
+"i.e REGULAR USEDLY COMPLEX QUERY.ARE PUTTING IN VIEW THEN ONLY WE ARE REQUESTING VIEWS WHENEVER NECESSARY BY USING SELECT * FROM VIEWNAME
+
+"GENERALLY IN ALL RELATIONAL DATABASES IF ANY VIEW HAVING FUNCTION OR EXPRESSION THEN 
+"WE MUST CREATE ALIAS-NAME FOR THOSE FUNCTION OR EXPRESSION OTHERWISE DATABASE SERVER RETURN ERROR.
+
+   +---------------------------------------------------------------------------------+
+   |EXAMPLE:                                                                         |
+   |--------                                                                         |
+   |sql>create or replace view v1 as select deptno,max(sal)from emp group by deptno; |
+   |                                                                                 |
+   |ERROR:must name this expression with a column alias                              |
+   |[Alias name of expression[Function,rownum,join,set,etc]]                         |
+   +----------------------------------------------------------------------------------+
+   |SOLUTION:                                                                         |
+   |---------                                                                         |
+   |sql>create or replace view v1 as select deptno,max(sal)a from emp group by deptno;|
+   +----------------------------------------------------------------------------------+
 
 sql>select * from v1;
 | deptno | A |
@@ -78,16 +98,20 @@ TEXT:
 select deptno,max(sal)a from emp group by deptno;
 
 note:
-In oracle when view having rownum pesudo column also then we must create alis name for that rownum Otherwise
-ORACLE SERVER return ERROR.
-Example2:
-sql>create or replace view v2 as select rownum,ename from emp where rownum<=2;
+-----
+IN ORACLE WHEN VIEW HAVING ROWNUM PESUDO COLUMN ALSO THEN WE MUST CREATE ALIAS NAME FOR THAT ROWNUM 
+OTHERWISE ORACLE SERVER RETURN ERROR.
 
-ERROR:must name this expression with a column alias 
-
-solution:
----------
-sql>CREATE OR REPLACE VIEW VIEW AS SELECT ROWNUM r,ENAME FROM EMP WHERE ROWNUM<=2;
+   +----------------------------------------------------------------------------------+
+   |Example2:                                                                         |
+   |sql>create or replace view v2 as select rownum,ename from emp where rownum<=2;    |
+   |                                                                                  |
+   |ERROR:must name this expression with a column alias                               |
+   |                                                                                  |
+   |solution:                                                                         |
+   |---------                                                                         |
+   |sql>create or replace view view as select rownum r,ename from emp where rownum<=2;|
+   +----------------------------------------------------------------------------------+
 
 sql>select * from v2;
 
@@ -96,6 +120,7 @@ sql>select * from v2;
 | 1 | SMITH |
 |---+-------|
 | 2 | ALLEN |
+
 
 TESTING:
 ========
@@ -106,68 +131,89 @@ Text:
 --------------------------------------------------
 select rownum r,ename from emp where rownum<=2;
 
+
 COMPLEX VIEW or JOIN VIEW:
 ==========================
-Complex view is a view which is created from multiple base table.
-Generally in all relational databases we cant not perform dml operation in complex view.
 
-Example1:
-sql>create table test1(name varchar2(10));
-sql>create table test2(sub varchar2(10));
+"COMPLEX VIEW IS A VIEW WHICH IS CREATED FROM MULTIPLE BASE TABLE.
+"GENERALLY IN ALL RELATIONAL DATABASES WE CANT NOT PERFORM DML OPERATION IN COMPLEX VIEW.
 
-complex view:
--------------
-sql>create or replace view v3 as select name,sub from test1,test2;
+   +---------------------------------------------------------------------+
+   |Example:                                                             |
+   |-------                                                              |
+   |sql>create table test1(name varchar2(10));                           |
+   |sql>create table test2(sub varchar2(10));                            |
+   |                                                                     |
+   |COMPLEX VIEW:                                                        |
+   |-------------                                                        |
+   |sql>create or replace view v3 as select name,sub from test1,test2;   |
+   +---------------------------------------------------------------------+
+
+sql>create or replace view cv1 as select e1.ename,d1.dname from emp e1,dept d1 where e1.deptno=d1.deptno
 
 sql>insert into v3(name,sub)values('murli','oracle');
 
 ERROR:cannot modify a column which maps to a non key-preserved key
 
+
 MATERIALIZED VIEW:
-------------------
+================
 
-Oracle 8i introduced materialized view materialized views also created from base table. Generally materialized-view are created by database administrator and also materialized view are used in DATA warehousing Applic-ation.
+"ORACLE 8I INTRODUCED MATERIALIZED VIEW MATERIALIZED VIEWS ALSO CREATED FROM BASE TABLE. 
+"GENERALLY MATERIALIZED-VIEW ARE CREATED BY DATABASE ADMINISTRATOR AND ALSO MATERIALIZED
+"VIEW ARE USED IN DATA WAREHOUSING APPLIC-ATION.
 
-Generally view does not store any data where as materialized view stores data.
+"GENERALLY VIEW DOES NOT STORE ANY DATA WHERE AS MATERIALIZED VIEW STORES DATA.
 
-syntax:
+SYNTAX:
+------
 create materialized view viewname as select statement
 
-DIFFERENCE B/W VIEW,MATERIALIZED VIEW
-=====================================
-            VIEW                            MATERIALIZED VIEW                                    |
 
-1:view does not store any data          |1:Materialized view can store data
-2:Security purpose                      |2:Improve performance purpose
-3:when we are dropping a base table then|
-  view cannot be accessible             |3:when we are dropping base table also then materialized view can be
-                                        | accessible.
-4:                                      |4:In materialized view we cannot perform dml operations
+                     DIFFERENCE B/W VIEW,MATERIALIZED VIEW
+                     =====================================
+----------------------------------------------------------------------------------------------------
+            VIEW                            MATERIALIZED VIEW                                    
+
+"VIEW DOES NOT STORE ANY DATA          |MATERIALIZED VIEW CAN STORE DATA"
+"SECURITY PURPOSE                      |IMPROVE PERFORMANCE PURPOSE"
+"WHEN WE ARE DROPPING A BASE TABLE THEN|"
+VIEW CANNOT BE ACCESSIBLE"             |WHEN WE ARE DROPPING BASE TABLE ALSO THEN MATERIALIZED VIEW CAN 
+                                       | ACCESSIBLE.
+                                       |IN MATERIALIZED VIEW WE CANNOT PERFORM DML OPERATIONS
+
+----------------------------------------------------------------------------------------------------
 
 
-
-In oracle before we are creating materialized view then database administrator must give create any materialized view permission to user by using following syntax otherwise oracle server returns error.
-
-syntax:
+IN ORACLE BEFORE WE ARE CREATING MATERIALIZED VIEW THEN DATABASE ADMINISTRATOR MUST GIVE CREATE ANY 
+MATERIALIZED VIEW PERMISSION TO USER BY USING FOLLOWING SYNTAX OTHERWISE ORACLE SERVER RETURNS ERROR.
+"
+SYNTAX:
 --------
 grant create any  materialized view to username;
 
-Example:
+   +------------------------------------------------------+
+   |EXAMPLE:                                              |
+   |--------                                              |
+   |sql>conn scott/tiger;                                 |
+   |sql>create materialized view mb1 as select * from emp;|
+   |ERROR:insufficient privileges;                        |
+   +------------------------------------------------------+
 
-sql>conn scott/tiger;
-sql>create materialized view mb1 as select * from emp;
-ERROR:insufficient privileges;
+   +------------------------------------------------------+
+   |SOLUTION:                                             |
+   |--------                                              |
+   |sql>conn sys as sysdba;                               |
+   |sql>grant create any materialized view to scott       |
+   |sql>conn scoot/tiger;                                 |
+   |sql>create materialized view mb1 as select * from emp;|
+   |Materialized view cread.                              |
+   +------------------------------------------------------+
 
-solution:
-sql>conn sys as sysdba;
-sql>grant create any materialized view to scott
-sql>conn scoot/tiger;
-sql>create materialized view mb1 as select * from emp;
-Materialized view cread.
-
-note1:
-when we are creating views if oracle server returns insufficient privileges error then also database,
-administrator must give create any view permission to user by using following syntax.
+note:
+-----
+WHEN WE ARE CREATING VIEWS IF ORACLE SERVER RETURNS INSUFFICIENT PRIVILEGES ERROR THEN ALSO DATABASE,
+ADMINISTRATOR MUST GIVE CREATE ANY VIEW PERMISSION TO USER BY USING FOLLOWING SYNTAX.
 
 SYNTAX:
 -------
@@ -178,7 +224,8 @@ sql>create or replace view v1 as select * from emp where deptno=10;
 
 Error:insufficent privileges
 
-solution:
+SOLUTION:
+--------
 sql>conn sys as sysdba;
 [If you are using oracle12c then you must also connect to pluggable database before grant permmission]
 [alter session set container=pdb1]
@@ -186,13 +233,13 @@ sql>grant create any view to scott;
 sql>conn scott/tiger;
 sql>create or replace view v1 as select * from emp where deptno=10;
 
-note2:
+note:
+-----
+"PRIOR TO ORACLE 11G WHEN EVER WE ARE CREATING MATERIALIZED VIEW ON OF THE MATERIALIZED VIEW BASED TABLE,
+"MUST HAVE PRIMARY KEY OTHERWISE ORACLE SERVER RETURN ERROR.[[BUT NOT IN 12C]]
 
-prior to oracle 11g when ever we are creating materialized view on of the materialized view based table,
-must have primary key otherwise oracle server return error.[[BUT NOT IN 12C]]
-
-Example:
-
+EXAMPLE:
+--------
 sql>create table test(sno number(10));
 sql>create materialized view mb2 as select * from test;
 Error:table 'TEST' does not constain a primary key constraint
@@ -208,33 +255,41 @@ sql>select * from base;
        | 3   | c    |
        | 4   | d    |
        |-----+------|
+
 sql>create materialized view mc1 as select * from base;
 Materialized view created
 
-here materialized view also same as view because whenEver we are creating materialized view also,materialized view definition are automatically stored in oracle database same like view definition
+****************************************************************************************************
 
-In oracle if you want view materialized view definition then we are using user_mviews data dictionary.
+"HERE MATERIALIZED VIEW ALSO SAME AS VIEW BECAUSE WHENEVER WE ARE CREATING MATERIALIZED VIEW ALSO
+MATERIALIZED VIEW DEFINITION ARE AUTOMATICALLY STORED IN ORACLE DATABASE SAME LIKE VIEW DEFINITION
 
-EXAMPLE:
-sql>desc user_mviews;
+"IN ORACLE IF YOU WANT VIEW MATERIALIZED VIEW DEFINITION THEN WE ARE USING USER_MVIEWS DATA DICTIONARY.
+
+EXAMPLE: sql>desc user_mviews;
 sql>select query from user_mviews where mview_name='MC1';
 
-Execution:
+EXECUTION:
 ==========
+IN ORACLE WHENEVER WE ARE CREATING VIEW THEN AUTOMATICALLY VIEW DEFINITION ARE PERMANENTLY STORED IN
+ORACLE DATABASE WHENEVER "WE ARE REQUESTING VIEW BY USING
 
-in Oracle whenever we are creating view then automatically view definition are permanently stored in
-oracle database whenever we are requesting view by using
-SELECT * VIEWNAME then oracle server automatically execute view definition that's in this case corresponding base table are effected i.e when we are requesting view more no of times also then each and every time,
-base table are effected because in each and every time view definition are executed.
+"SELECT * VIEWNAME THEN ORACLE SERVER AUTOMATICALLY EXECUTE VIEW DEFINITION THATS IN THIS CASE 
+"CORRESPONDING BASE TABLE ARE EFFECTED i.e WHEN WE ARE REQUESTING VIEW MORE NO OF TIMES ALSO THEN EACH 
+"AND EVERY TIME,BASE TABLE ARE EFFECTED BECAUSE IN EACH AND EVERY TIME VIEW DEFINITION ARE EXECUTED.
 
-In oracle whenever we are creating materialized view then oracle server automatically stored query result,
-within materialized view and also materialized view definition are internally automatically stored in,
-dataDictionary whenever user requesting materialized view by using SELECT * FROM MATERIALIZED VIEWNAME
-then oracle server directly retrieve data from materialized view that's why in this case materialized view,
-definition are not executed that's why materialized base table also never effected but when we are refreshing materialized view then only oracle server execute materialized view definition and in this case only 
-materialized view and base table are effected..that's why materialized view improve performance compare to 
-view because in materialized view corresponding base tables are effected very less no of times compare to 
-corresponding views base tables
+IN ORACLE WHENEVER WE ARE CREATING MATERIALIZED VIEW THEN ORACLE SERVER AUTOMATICALLY STORED QUERY RESULT,
+WITHIN MATERIALIZED VIEW AND ALSO MATERIALIZED VIEW DEFINITION ARE INTERNALLY AUTOMATICALLY STORED IN,
+DATADICTIONARY. 
+
+"WHENEVER USER REQUESTING MATERIALIZED VIEW BY USING SELECT * FROM MATERIALIZED VIEWNAME
+"THEN ORACLE SERVER DIRECTLY RETRIEVE DATA FROM MATERIALIZED VIEW THAT'S WHY IN THIS CASE MATERIALIZED VIEW
+"DEFINITION ARE NOT EXECUTED THAT'S WHY MATERIALIZED BASE TABLE ALSO NEVER EFFECTED BUT WHEN 
+"WE ARE REFRESHING MATERIALIZED VIEW THEN ONLY ORACLE SERVER EXECUTE MATERIALIZED VIEW DEFINITION AND IN 
+"THIS CASE ONLY MATERIALIZED VIEW AND BASE TABLE ARE EFFECTED..THAT'S WHY MATERIALIZED VIEW IMPROVE 
+"PERFORMANCE COMPARE TOVIEW BECAUSE IN MATERIALIZED VIEW CORRESPONDING BASE TABLES ARE EFFECTED VERY LESS 
+"NO OF TIMES COMPARE TO "CORRESPONDING VIEWS BASE TABLES
+
 
 EXAMPLE:
 sql>select * from v1;
@@ -254,22 +309,39 @@ sql>select * from mc1;
 | 3   | c    |
 | 4   | d    |
 
-sql>SELECT ROWID,SNO,NAME FROM BASE;
-sql>SELECT ROWID,SNO,NAME FROM V1;
-here view rowid are also same as base table rowid thats why view are stored  not any data thats why view is also called as virtual table or window of table.
-But through the view we can access base table data
-
 sql>select rowid,sno,name from base;
-sql>select rowid,sno,name from mc1;
-here materialized view rowid are different from base table rowid thats why materialized view stores data,
+
+sql>select rowid,sno,name from v1;
+
+"HERE VIEW ROWID ARE ALSO SAME AS BASE TABLE ROWID THATS WHY VIEW ARE STORED ANY DATA THATS WHY VIEW IS 
+ALSO CALLED AS VIRTUAL TABLE OR WINDOW OF TABLE. BUT THROUGH THE VIEW WE CAN ACCESS BASE TABLE DATA."
+
+       +---------------------------------------+
+       |sql>select rowid,sno,name from base;   |
+       |                                       |
+       |sql>select rowid,sno,name from mc1;    |
+       +---------------------------------------+
+
+UNTIL THE NOT CHANGED BOTH ROWID WILL BE SAME
+MATERIALIZED VIEW ROWID ARE DIFFERENT FROM BASE TABLE ROWID THATS WHY MATERIALIZED VIEW STORES DATA,
+
 
 sql>SELECT * FROM BASE;
-| sno | na |
-|-----+----|
-| 1   | a  |
-| 2   | b  |
-| 3   | c  |
-| 4   | d  |
+| sno | na | rowid |
+|-----+----+-------|
+| 1   | a  | 1111  |
+| 2   | b  | 2222  |
+| 3   | c  | 3333  |
+| 4   | d  | 3333  |
+
+sql>select * from mv1;
+
+| sno | na | rowid |
+|-----+----+-------|
+| 1   | a  | 1111  |
+| 2   | b  | 2222  |
+| 3   | c  | 3333  |
+| 4   | d  | 4444  |
 
 sql>UPDATE BASE SET NAME=UPPER(NAME);
 
@@ -290,16 +362,20 @@ sql>select * from mc1;
 | 4   | d    |
 
 
-Materialized view also stores data same like table but when we  are refreshing materialized view synchronize based on base table
+MATERIALIZED VIEW ALSO STORES DATA SAME LIKE TABLE BUT WHEN WE  ARE REFRESHING MATERIALIZED VIEW SYNCHRONIZBASED ON BASE TABLE.
 
-In oracle if you want to refresh materialized then then we are using following syntax
+
+IN ORACLE IF YOU WANT TO REFRESH MATERIALIZED THEN THEN WE ARE USING FOLLOWING SYNTAX
 SYNTAX:
 ------
 sql>exec dbms_mview.refr|sh('materialized viewname')
           ---+----      +----+
              |packages name  +--procedure name
 
-exec dbms_mview.refresh('mc1');
+                      +---------------------------------+
+                      | exec dbms_mview.refresh('mc1'); |
+                      +---------------------------------+
+
 sql>select * from mc1;
 
 | sno | name |
@@ -310,24 +386,30 @@ sql>select * from mc1;
 | 4   | D    |
 [note: in this case rowid changed]
 
-Oracle having two types of materialized view.
 
-1:COMPLETE REFRESH MATERIALIZED VIEW.
-2:FAST REFRESH MATERIALIZED VIEW.
+"ORACLE HAVING TWO TYPES OF MATERIALIZED VIEW."
 
-1:Complete refresh Materialized view.
+1>COMPLETE REFRESH MATERIALIZED VIEW.
+
+2>FAST REFRESH MATERIALIZED VIEW.
+
+COMPLETE REFRESH MATERIALIZED VIEW.
 ====================================>
-in oracle by default materialized view are complete materialized view these materialized view does not give,
-more performance when we are refreshing materialized view more no of times because in these materialized vie-w,internally rowid are recreated when are we refreshing materialized view.
+
+IN ORACLE BY DEFAULT MATERIALIZED VIEW ARE COMPLETE MATERIALIZED VIEW THESE MATERIALIZED VIEW DOES NOT 
+GIVE, MORE PERFORMANCE WHEN WE ARE REFRESHING MATERIALIZED VIEW MORE NO OF TIMES BECAUSE IN THESE 
+MATERIALIZED VIEW,INTERNALLY ROWID ARE RECREATED WHEN WE ARE REFRESHING MATERIALIZED VIEW.
 
 SYNTAX
 -------
 sql>create materialized view viewname |refresh complete as select statement
                                       +-------------+-[KEYWORD]
-WhenEver we are using complete materialized views an| also when we are refreshing these materialized view then oracle server Internally automatically TRUNCATE materialized view that's why rowid are changed,when we,
-are refreshing materialized view To over come this problem oracle provide fast refresh Materialized view.
 
-example of complete refresh materialized view:-
+WHENEVER WE ARE USING COMPLETE MATERIALIZED VIEWS AND ALSO WHEN WE ARE REFRESHING THESE MATERIALIZED VIEW 
+THEN ORACLE SERVER INTERNALLY AUTOMATICALLY TRUNCATE MATERIALIZED VIEW THATS WHY ROWID ARE CHANGED,WHEN WE
+ARE REFRESHING MATERIALIZED VIEW TO OVER COME THIS PROBLEM ORACLE PROVIDE FAST REFRESH MATERIALIZED VIEW.
+
+EXAMPLE OF COMPLETE REFRESH MATERIALIZED VIEW:-
 ===============================================>
 sql>select rowid,sno,name from mc1;
 
@@ -336,70 +418,89 @@ sql>exec dbms_mview.refresh('mc1');
 sql>select rowid,sno,name from mc1;
 (here rowids are changed)
 +---------------------------------------------------------------------------------------------------------+
-|If you are adding new column after materialized view creation then again updation for column and data will get | Error.
+|If you are adding new column after dbms_mview execution then again updation for column and data will get | Error.
 +---------------------------------------------------------------------------------------------------------+
 
 2:FAST REFRESH MATERIALIZED VIEW:-
 =================================>
 
-Fast refresh materialized views is also called as incremental refresh materialized views fast materialized,
-view gives more performance then then complete materialized view because in fast refresh materialized view rowid are never changed when we are refreshing materialized views more no of times also 
+"FAST REFRESH MATERIALIZED VIEWS IS ALSO CALLED AS INCREMENTAL REFRESH MATERIALIZED VIEWS FAST MATERIALIZED
+VIEW GIVES MORE PERFORMANCE THEN THEN COMPLETE MATERIALIZED VIEW BECAUSE IN FAST REFRESH MATERIALIZED VIEW ROWID ARE NEVER CHANGED WHEN WE ARE REFRESHING MATERIALIZED VIEWS MORE NO OF TIMES ALSO 
 
 SYNTAX:
 -------
 sql>create materialized view viewname |refresh fast as select statement;
                                       +--[KEYWORD]
-Before we are creating fast materialized view then we must create MATERIALIZED VIEW LOG on base tables,
-by using following syntax Otherwise oracle server return Error.
+
+****************************************************************************************************
+
+BEFORE WE ARE CREATING FAST MATERIALIZED VIEW THEN WE MUST CREATE MATERIALIZED VIEW LOG ON BASE TABLES,
+BY USING FOLLOWING SYNTAX OTHERWISE ORACLE SERVER RETURN ERROR.
 
 SYNTAX:
 --------
 create materialized view log on base table;
-[Make sure table contain primary key oracle 12c]
+[MAKE SURE TABLE CONTAIN PRIMARY KEY ORACLE 12C]
 
-Materialized View Log:
+MATERIALIZED VIEW LOG:
 =====================>
-Before we are creating fast refresh materialized view                                                        then we need a mechanism to capture any changed made to its base table this mechanism is also called as|
-materialized view log.                                                                                                                                                                                              |
-these changed automatically store in data Dictionary and also when ever refreshing fast refresh materialized view then oracle server directly retrieve data from data dictionary thats why in this case materialized never,changed
+BEFORE WE ARE CREATING FAST REFRESH MATERIALIZED VIEW THEN WE NEED A MECHANISM TO CAPTURE ANY CHANGED 
+MADE TO ITS BASE TABLE THIS MECHANISM IS ALSO CALLED AS| "materialized view log.                                                                                                                                                                                              |
+THESE CHANGED AUTOMATICALLY STORE IN DATA DICTIONARY AND ALSO WHEN EVER REFRESHING FAST REFRESH 
+MATERIALIZED VIEW THEN ORACLE SERVER DIRECTLY RETRIEVE DATA FROM DATA DICTIONARY THATS WHY IN THIS CASE 
+MATERIALIZED NEVER,CHANGED
 
-EXAMPLE:
-sql>create MATERIALIZED view log on base;
+  +----------------------------------------------------------------------+
+  | EXAMPLE:                                                             |
+  | --------                                                             |
+  | sql>create MATERIALIZED view log on base;                            |
+  |                                                                      |
+  | sql>create Materialized view mc2 refresh fast as select * from base; |
+  |                                                                      |
+  | sql>select rowid,sno,name from base;                                 |
+  | sql>update base set name='xy'where sno=1;                            |
+  | sql>insert into base values(10,'bridget);in this case only inserted new rowd id will be generated.                                                                   |
+  | sql>select rowid,sno,name from mc2;                                  |
+  +----------------------------------------------------------------------+
 
-sql>create Materialized view mc2 refresh fast as select * from base;
 
-sql>select rowid,sno,name from base;
-sql>update base set name='xy'where sno=1;
+          +---------------------------------------------------------------+
+          | SQL>EXEC DBMS_MVIEW.REFRESH('MC2');                           |
+          | SQL>SELECT ROWID,SNO,NAME FROM MC2;                           |
+          | (here rowids are never changed)                               |
+          | (inserte into....using then new rowid created remaining same) |
+          |                                                               |
+          +---------------------------------------------------------------+
 
-sql>select rowid,sno,name from mc2;
+*IF YOU ARE ADDING NEW COLUMN AFTER LOG CREATION THEN AGAIN UPDATION FOR COLUMN AND DATA WILL NOT UPDATE |  
 
-sql>exec dbms_mview.refresh('mc2');
-sql>select rowid,sno,name from mc2;
-(here rowids are never changed)
-+---------------------------------------------------------------------------------------------------------+
-|If you are adding new column after Log creation then again updation for column and data will not update || 
-+--------------------------------------------------------------------------------------------------------++
 ON DEMAND/ON COMMIT:-
--------------------->
-In oracle we are refreshing materialized view in two ways these are.
-1:MANUALLY
-2:AUTOMATICALLY
+===================
 
-1:Manually:-
-In this method we are refreshing materialized view by using dbms_mview packages this method is also called,
-as ON DEMAND method by default method is ON DEMAND 
+IN ORACLE WE ARE REFRESHING MATERIALIZED VIEW IN TWO WAYS THESE ARE.
 
-2:Automatically:-
------------------>
-In this method we can also refresh materialized view automatically without using dbms_mveiw [packages]
-This method is also called as ON COMMIT method
+*MANUALLY
+*AUTOMATICALLY
 
-Syntax:
-create materialized view view name refresh COMPLETE/refresh FAST on DEMAND/on commit as select statement;
+MANUALLY:-
+=========
+IN THIS METHOD WE ARE REFRESHING MATERIALIZED VIEW BY USING DBMS_MVIEW PACKAGES THIS METHOD IS ALSO CALLED
+AS ON DEMAND METHOD BY DEFAULT METHOD IS ON DEMAND 
 
+AUTOMATICALLY:-
+=============
+"IN THIS METHOD WE CAN ALSO REFRESH MATERIALIZED VIEW AUTOMATICALLY WITHOUT USING DBMS_MVEIW [PACKAGES]
+"This method is also called as ON COMMIT method
+
+          +--------------------------------------------------------------+
+          | Syntax:                                                      |
+          | -------                                                      |
+          | create materialized view view name refresh COMPLETE/refresh  |
+          | FAST on DEMAND/on commit as select statement;                |
+          +--------------------------------------------------------------+
 
 EXAMPLE:
-
+--------
 sql>select * from base;
         | SNO | NAME |
         |-----+------|
@@ -407,6 +508,9 @@ sql>select * from base;
         | 2   | B    |
         | 3   | C    |
         | 4   | D    |
+
+
+***********************************************************************************************************
 
 sql>create materialized view mc5 refresh fast on commit as select * from base;
 +-------------------------------------------------------------------------------------------------------+
@@ -416,6 +520,9 @@ sql>create materialized view mc5 refresh fast on commit as select * from base;
                                    |then it will not effect to mview table it will always retrieve from log|
                                    |inside log new column information is not available that's why         |
 materialized view is created.      +----------------------------------------------------------------------+
+
+
+***********************************************************************************************************
 
 sql>select * from mc5;
 
@@ -427,9 +534,9 @@ sql>select * from mc5;
         | 4   | D    |
 
 sql>update base set name='zz' where sno=2;
-sql>select * from base;                      /
-        | SNO | NAME |                      /
-        |-----+------|                     /
+sql>select * from base;
+        | SNO | NAME |
+        |-----+------|
         | 1   | XY   |
         | 2   | ZZ   |
         | 3   | C    |
@@ -454,147 +561,168 @@ sql>select * from mc5;
         | 2   | ZZ   |
         | 3   | C    |
         | 4   | D    |
+**********************************************************************************************************
+
 
 **********************************************************************************************************
  ---------------------------------------------------------------------------------------------------------
-| Complete refresh materialized     | Fast refresh materiaized view or commit on demand                  |
+| COMPLETE REFRESH MATERIALIZED     | FAST REFRESH MATERIAIZED VIEW OR COMMIT ON DEMAND                  |
 |-----------------------------------+--------------------------------------------------------------------|
-| When we are performing updation,  | When we are performing updation/insertion operation on base table, |
-| operation then automatically all, | then F materialized view change only particular row of rows id,and |
-| rows of rowid will changed.       | remaining all address will be same but in this case commit not     |
-|                                   | any address will be changed.                               |
-*************************************************************************************************|********
-                                                                                                 |
+| WHEN WE ARE PERFORMING UPDATION,  | WHEN WE ARE PERFORMING UPDATION/INSERTION OPERATION ON BASE TABLE, |
+| OPERATION THEN AUTOMATICALLY ALL, | THEN F MATERIALIZED VIEW CHANGE ONLY PARTICULAR ROW OF ROWS ID,AND |
+| ROWS OF ROWID WILL CHANGED.       | REMAINING ALL ADDRESS WILL BE SAME BUT IN CASE OF COMMIT NOT ANY ADD                                       -ress will changed|
+|                                   | 
+**********************************************************************************************************
 
- DATA CONTROL LANGUAGE(DCL) |
 
-=====================
+**********************************************************************************************************
+
+DATA CONTROL LANGUAGE(DCL)
+========================
 1:GRANT
 2:REVOKE
+      +--------------------------------------------------+
+      | CREATE A USER                                    |
+      | ================                                 |
+      | sql>conn sys as sysdba; or                       |
+      | sql>conn system/manager;                         |
+      | sql>create user username identified by password; |
+      | sql>grant connect,resource to username;          |
+      | sql>conn username/pasword;                       |
+      +--------------------------------------------------+
 
-create a user
-================
-sql>conn sys as sysdba;
-or 
-sql>conn system/manager;
+              +-----------------------------------------------+
+              | EXAMPLE:                                      |
+              | -------                                       |
+              | sql>conn sys as sysdba;                       |
+              | Enter password:sys                            |
+              |                                               |
+              | sql>create user murali identified by murali;  |
+              |                                               |
+              | sql>grant connect,resource to murali;         |
+              +-----------------------------------------------+
 
-sql>create user username identified by password;
-sql>grant connect,resource to username;
-sql>conn username/pasword;
+             +---------------------------------------+
+             |  sql>conn murali/murali;              |
+             |                                       |
+             |  sql>select * from emp;               |
+             |                                       |
+             |  ERROR;table or view does not exist   |
+             |                                       |
+             |  sql>conn scott/tiger;                |
+             |  sql>grant all on emp to murali;      |
+             |                                       |
+             |  sql>conn murali/murali;              |
+             |  ERROR:table or view does not exist   |
+             |                                       |
+             |  sql>select * from scott.emp;         |
+             +---------------------------------------+
 
-
-EXAMPLE:
-sql>conn sys as sysdba;
-Enter password:sys
-
-sql>create user murali identified by murali;
-
-sql>grant connect,resource to murali;
-
-sql>conn murali/murali;
-
-sql>select * from emp;
-
-ERROR;table or view does not exist
-
-sql>conn scott/tiger;
-sql>grant all on emp to murali;
-
-sql>conn murali/murali;
-ERROR:table or view does not exist
-
-sql>select * from scott.emp;
-
-PRIVILEGE
+PRIVILEGE:-
 =========
 
-Privilege is write given to the user or privilege is also called as permission 
+PRIVILEGE IS WRITE GIVEN TO THE USER OR PRIVILEGE IS ALSO CALLED AS PERMISSION 
 
-In all relational databases data security point of view every user having two types of privileges.
+IN ALL RELATIONAL DATABASES DATA SECURITY POINT OF VIEW EVERY USER HAVING TWO TYPES OF PRIVILEGES.
 
-1:System Privileges:
-2:Object Privilege:
-
-By using grant command we are allowd to view these system object priviege into the another user and also,
-by using revoke command we are allowd to cancelld these system or object privilege from user.
+1>System Privileges:
+2>Object Privilege:
+'
+BY USING grant COMMAND WE ARE ALLOWD TO VIEW THESE SYSTEM OBJECT PRIVIEGE INTO THE ANOTHER USER AND ALSO,
+BY USING REVOKE COMMAND WE ARE ALLOWD TO CANCELLD THESE SYSTEM OR OBJECT PRIVILEGE FROM USER.
 
 SYSTEM PRIVILEGES:
-===================
+=================
 
-Who recieve system privileges then those users are allowed to create database object or allowed to drop,
-database object Oracle having more then 80 system privilege [predefine command] these are.
+"WHO RECIEVE SYSTEM PRIVILEGES THEN THOSE USERS ARE ALLOWED TO CREATE DATABASE OBJECT OR ALLOWED TO DROP,
+"DATABASE OBJECT ORACLE HAVING MORE THEN 80 SYSTEM PRIVILEGE [PREDEFINE COMMAND] THESE ARE.
 
-create session
-,create table,
-create any view
-create any materialized view
-create trigger
-create procedure,
-create any index
+   +-----------------------------+
+   |create session               |
+   |create table,                |
+   |create any view              |
+   |create any materialized view |
+   |create trigger               |
+   |create procedure,            |
+   |create any index             |
+   +-----------------------------+
+
 SYNTAX:
+-------
 grant systemprivilege to username1,username2,...;
 
 note:
-These system privilege are given by databasee administator only
+----
+THESE SYSTEM PRIVILEGE ARE GIVEN BY DATABASEE ADMINISTATOR ONLY
 
-create session:
+CREATE SESSION:
 ===============
+"IN ORACLE IF ANY USER WANT TO CONNECT THE ORACLE DATABASE THEN THAT USER MUST HAVE CREATE SESSION SYSTEM,
+"PRIVILEGE OTHERWISE ORACLE SERVER RETURN ERROR
 
-In oracle if any user want to connect the oracle database then that user must have create session system,
-privilege otherwise oracle server return Error
+    EXAMPLE:
+    --------
+    sql>conn sys as sysdba;
+    sql>create user india identified by india;
 
-EXAMPLE:
-sql>conn sys as sysdba;
-sql>create user india identified by india;
+    sql> conn india/india;
 
-sql> conn india/india;
-
-ERROR:user INDIA lacks CREATE SESSION privilege; logon denied;
+    ERROR:user INDIA lacks CREATE SESSION privilege; logon denied;
 
 
-solution:
----------
-sql>conn sys as sysdba;
-sql>grant create session to india;
+        SOLUTION:
+        ---------
+        sql>conn sys as sysdba;
+        sql>grant create session to india;
 
-sql>conn india/india;
+        sql>conn india/india;
 
-in oracle if you want to view system privilege related to particular user then we are useing following selec-t statment
+
+IN ORACLE IF YOU WANT TO VIEW SYSTEM PRIVILEGE RELATED TO PARTICULAR USER.
+THEN WE ARE USEING FOLLOWING SELECT STATMENT.
 
 SYNTAX:
-
 sql>select * from session_privs;
 
-sql>conn india/india;
-sql>select * from session_privs;
-PRIVILEGE
-------------------
-example:
-sql>conn sys as sysdba;
-sql>grant create procedure,create trigger,create any materialized view to scott,murli;
+    sql>conn india/india;
+    sql>select * from session_privs;
+    PRIVILEGE
+    ------------------
+        EXAMPLE:
+        --------
+        sql>conn sys as sysdba;
+        sql>grant create procedure,create trigger,create any materialized view to scott,murli;
+
 
 ROLE:-
 ======
-Role is nothing but collection of system privileger oracle having two types of role.
-there are :
-1:user defined roles.
-2:predefined roles.
-user defined role:-
+"ROLE IS NOTHING BUT COLLECTION OF SYSTEM PRIVILEGER ORACLE HAVING TWO TYPES OF ROLE.
+ THERE ARE :
+
+USER DEFINED ROLES:-
+PREDEFINED ROLES:-
+
+USER DEFINED ROLE:-
 ==================
-user defined roles are created by database administator only Generally in multi user enviroment so many,
-employees are working on same project in that case so many employee requireds same set of system privilegers,In this case only database administator create role and then assinged command set o system privileger 
-and then only those roles are divide into no of users
-         system prvie     +----+
- --------------------|    |    |
-                     +----+ROLE| -------------user1
- --------------------|    |    |              user2
-                          +----+
+"USER DEFINED ROLES ARE CREATED BY DATABASE ADMINISTATOR ONLY GENERALLY IN MULTI USER ENVIROMENT SO MANY,
+"EMPLOYEES ARE WORKING ON SAME PROJECT IN THAT CASE SO MANY EMPLOYEE REQUIREDS SAME SET OF SYSTEM PRIVILEGEIN THIS CASE ONLY DATABASE ADMINISTATOR CREATE ROLE AND THEN ASSINGED COMMAND SET O SYSTEM PRIVILEGER 
+AND THEN ONLY THOSE ROLES ARE DIVIDE INTO NO OF USERS.'
 
-In oracle user define role are created by using follwoing three step process.
 
-1:create a role:
-2:assign system privilegs into role.
-3:assing rolename to number of users;
+             system prvie     +----+
+     --------------------|    |    |
+                         +----+ROLE| -------------user1
+     --------------------|    |    |              user2
+                              +----+
+
+
+IN ORACLE USER DEFINE ROLE ARE CREATED BY USING FOLLWOING THREE STEP PROCESS.
+
+      +---------------------------------------+
+      | 1:create a role:                      |
+      | 2:assign system privilegs into role.  |
+      | 3:assing rolename to number of users; |
+      +---------------------------------------+
 
 CREATE A ROLE
 =============
@@ -614,19 +742,23 @@ ASSING ROLENAME TO NUMBER OF USER
 syntax:
 grant rolenmae to user1,user2,.....;
 
-EXAMPLE:
+   +------------------------------------------------------------------------------+
+   |EXAMPLE:                                                                      |
+   |--------                                                                      |
+   |sql>create role r1;                                                           |
+   |sql>grant create procedure,create trigger,create any materialized view to r1; |
+   |                                                                              |
+   |sql>grarnt r1 to scott , murali;                                              |
+   ------------------------------------------------------+------------------------
 
-sql>create role r1;
-sql>grant create procedure,create trigger,create any materialized view to r1;
+NOW WE ARE ABLE TO CREATE VIEW,MATERIALIZED VIEW BECAUSE ROLE PERMISSION YOU CAN SO GIVE USER PERMISSION].
 
-sql>grarnt r1 to scott , murali;
-+-----------------------------------------------------------------------------------------------------------
-|Now we are able to create view,materialized view becauseo role permission you can so give user permission]|
-+----------------------------------------------------------------------------------------------------------+
-In oracle if you want to view system privilege related to role then we are using role_sys_privis data dictio-nary
+IN ORACLE IF YOU WANT TO VIEW SYSTEM PRIVILEGE RELATED TO ROLE THEN WE ARE USING ROLE_SYS_PRIVIS 
+DATA DICTIONARY
 
-sql>desc role_SYS_privis;
-sql>select role,privilege from role_sys_privs where role='R1';
+    sql>desc role_SYS_privis;
+    sql>select role,privilege from role_sys_privs where role='R1';
+
 
 | ROLE | PRIVILEGE                    |
 |------+------------------------------|
@@ -634,33 +766,49 @@ sql>select role,privilege from role_sys_privs where role='R1';
 | R1   | CREATE ANY MATERIALIZED VIEW |
 | R1   | CREATE PROCEDURE             |
 
-predefined roles:
+PREDEFINED ROLES:
 =================
 
-Whenever we are installaing oracle server then automaticaly three predefined roles are created within oracle-database
+"WHENEVER WE ARE INSTALLAING ORACLE SERVER THEN AUTOMATICALY THREE PREDEFINED ROLES ARE CREATED WITHIN 
+ORACLE DATABASE
 
-1:CONNECT(end users)
-2:RESOURCE(developer)
-3:DBA:(adminstrator);
-***********************************************************************************************************
- ----------------------------------------------------------------------------------------------------------+
-"In oracle 12c whenever we are connect to any user then we are typing conn username/password@pdb1 here you,|
-see username/password along with pdb also type because of user conflict we are specifying this user belong,|
-to pdb1 or same user belong to training[other pluggable data base name]You can also create same user nameIn|different pdb name"
- -----------------------------------------++---------------------------------------------------------------+
-Example:                                  ||
-sql>alter session set container=pdb1;     ||                                                           |
-sql>create scott identified by tiger      ||
-sql>alter session set container=training; ||
-sql>create scott identified by tiger;     ||
-user created.                             ||
- -----------------------------------------++
--------------------------------------------+
-In oracle if you want view predefined roles and also related system privileges then we are using role_sys_privs data dictionary 
-EXAMPLE:
-sql>conn sys as sysdba;
-sql>desc role_sys_privs;
-sql>select role,privilege from role_sys_privs where role in('CONNECT','RESOURCE');
+       +---------------------+
+       |1:CONNECT(end users) |
+       |2:RESOURCE(developer)|
+       |3:DBA:(adminstrator);|
+       +---------------------+
+
+
+ *********************************************************************************************************
+
+
+----------------------------------------------------------------------------------------------------------+
+"IN ORACLE 12C WHENEVER WE ARE CONNECT TO ANY USER THEN WE ARE TYPING CONN USERNAME/PASSWORD@PDB1 HERE YOU,|
+SEE USERNAME/PASSWORD ALONG WITH PDB ALSO TYPE BECAUSE OF USER CONFLICT WE ARE SPECIFYING THIS USER BELONG,|
+TO PDB1 OR SAME USER BELONG TO TRAINING[OTHER PLUGGABLE DATA BASE NAME]YOU CAN ALSO CREATE SAME USER NAMEIN|DIFFERENT PDB NAME"
+ -----------------------------------------++--------------------------------------------------------------
+
+
+      | Example:                                  ||
+      | sql>alter session set container=pdb1;     ||                                                           
+      | sql>create scott identified by tiger      ||
+      | sql>alter session set container=training; ||
+      | sql>create scott identified by tiger;     ||
+      | user created.                             ||
+      | -----------------------------------------++
+      +--------------------------------------------+
+
+
+"IN ORACLE IF YOU WANT VIEW PREDEFINED ROLES AND ALSO RELATED SYSTEM PRIVILEGES THEN WE ARE USING 
+ ROLE_SYS_PRIVS DATA DICTIONARY 
+
+       +----------------------------------------------------------------------------------+
+       |EXAMPLE:                                                                          |
+       |sql>conn sys as sysdba;                                                           |
+       |sql>desc role_sys_privs;                                                          |
+       |sql>select role,privilege from role_sys_privs where role in('CONNECT','RESOURCE');|
+       +----------------------------------------------------------------------------------+
+
 
 | ROLE     | PRIVILEGE        |
 |----------+------------------|
@@ -677,42 +825,53 @@ sql>select role,privilege from role_sys_privs where role in('CONNECT','RESOURCE'
 
 sql>select role,privilege from role_sys_privs  where role in('DBA');
 
-note:In oracle connect role internally having createe session system privileges which is used to users are,
-allowed to connect to the oracle database.
+note:
+-----
+IN ORACLE CONNECT ROLE INTERNALLY HAVING CREATEE SESSION SYSTEM PRIVILEGES WHICH IS USED TO USERS ARE,
+ALLOWED TO CONNECT TO THE ORACLE DATABASE.
 
 
-Object privileges:-
+OBJECT PRIVILEGES:-
 ===================
 
-object privileges are given are either database developers or database administrator who recieve object,
-privileges then those users are allowed to perform operation on the object.
+OBJECT PRIVILEGES ARE GIVEN ARE EITHER DATABASE DEVELOPERS OR DATABASE ADMINISTRATOR WHO RECIEVE OBJECT,
+PRIVILEGES THEN THOSE USERS ARE ALLOWED TO PERFORM OPERATION ON THE OBJECT.
 
-Oracle having INSERT,UPDATE,DELETE,SELECT object privilegers these object privileges also represented by,
-using ALL keyword 
+ORACLE HAVING INSERT,UPDATE,DELETE,SELECT OBJECT PRIVILEGERS THESE OBJECT PRIVILEGES ALSO REPRESENTED BY,
+USING ALL KEYWORD 
 
-Oracle also support execute,read,write,object privileges in pl/sql.
+"ORACLE ALSO SUPPORT EXECUTE,READ,WRITE,OBJECT PRIVILEGES IN PL/SQL.
 
 Syntax:
+-------
+grant object privileges on objectname to usernames/rolename/public;"
 
-grant object privileges on objectname to usernames/rolename/public;
-
-EXAMPLE:
-sql>conn scott/tiger;
-sql>grant all on emp to murali;
-sql>conn murali/murali;
-sql>select * from scott.emp;
+       +--------------------------------+
+       |EXAMPLE:-                       |
+       |--------                        |
+       |sql>conn scott/tiger;           |
+       |sql>grant all on emp to murali; |
+       |sql>conn murali/murali;         |
+       |sql>select * from scott.emp;    |
+       +--------------------------------+
 
 note:
+-----
 #If you create materialized view from scott.emp using murali user then Error will get
 #sql>create materialized view mv1 as select * from scottt.emp where deptno=0;
 #Error:No privileges on tablespace 'USER'
-#solution:
-#here we can also see already we given materialized view permission also getting error here creating error is not this ERROR is inserting error 
+
+SOLUTION:
+---------
+#Here we can also see already we given materialized view permission also getting error here creating error is not this ERROR is inserting error 
 #VERIFY:
 #sql>CREATE MATERIALIZED VIEW MV2 AS SELECT * FROM SCOTT.EMP WHERE 1=2[here materialized view is created but data will not insert ]
+
 #+------------------------------------------------------------------------+
 #|You cannot insert data because you have quota of 0 on the tablespace    |
 #+------------------------------------------------------------------------+
+
+
 SOLUTION:
 +--------------------------------------------------------+
 |   sql>conn as sys as sysdba;                           |
@@ -724,24 +883,34 @@ SOLUTION:
 ================================                                              |
 |sql>select username,default_tablespace from dba_users where username='XXXX'  |
 +--------------------------------------------------------+--------------------+
-note:
-In oracle we can also give object privileges on specific columns by specifying those columns within ()
+
+
+NOTE:
+------
+IN ORACLE WE CAN ALSO GIVE OBJECT PRIVILEGES ON SPECIFIC COLUMNS BY SPECIFYING THOSE COLUMNS WITHIN ()
 EXAMPLE:
 sql>grant update(ename,sal)on emp to murali;
 
-With grant option:-
+WITH GRANT OPTION:-
 ===================
-with grant option is an optional clause used along with object privilege who recevies with draw grant clause then those users allowed to give some object privilege to another user
+WITH GRANT OPTION IS AN OPTIONAL CLAUSE USED ALONG WITH OBJECT PRIVILEGE WHO RECEVIES WITH DRAW 
+GRANT CLAUSE THEN THOSE USERS ALLOWED TO GIVE SOME OBJECT PRIVILEGE TO ANOTHER USER.
 
 SYNTAX:
 grant objectprivilege on objectname to usernames/public with grant option.
 
-note:In oracle with grant option clause does not work with roles 
+note:
+-----
+IN ORACLE WITH GRANT OPTION CLAUSE DOES NOT WORK WITH ROLES 
+
 EXAMPLE:
+--------
 sql>grant all on emp to r1 with grant option;
 
 ERROR:cannot GRANT to a role with Grant option.
 
+
+******************************************************************************************************
 
 | sql>conn scott/tiger           | sql>conn murali/murali            | sql>conn a1/a1         |
 |--------------------------------+-----------------------------------+------------------------|
@@ -751,27 +920,28 @@ ERROR:cannot GRANT to a role with Grant option.
 | with grant option;             | a1;Error:no privilege to grant    |
 | sql>                           | sql>grant all on scott.emp to a1; |
 
-In oracle all object information  store under user_tab_privs dataDictionary
+********************************************************************************************************
+
+
+IN ORACLE ALL OBJECT INFORMATION  STORE UNDER USER_TAB_PRIVS DATADICTIONARY
 
 EXAMPLE
 sql>desc user_tab_privs
 
 REVOKE:
 ======>
-
-
-REVOKE command is used to cancalled either system or object privileges from users 
+REVOKE COMMAND IS USED TO CANCALLED EITHER SYSTEM OR OBJECT PRIVILEGES FROM USERS 
 
 Syntax;
-
+-------
 1):revoke systemprivileges from username,,,,,;
 
 Syntax:
-
+-------
 2):revoke objectprivileges on objectname from usernames/rolename/public;
 
 EXAMPLE:
-
+--------
 sql>conn sys as sysdba
 sql>create user u1 identified by u1;
 sql>grant connect to u1;
@@ -794,16 +964,21 @@ Error:user u1 lacks create session privilege; logon denied
 
 warning:you are no longer connected to oracle.
 
-example:
+EXAMPLE:
+-------
 sql>conn sys as sysdba;
-
 sql>revoke all on scott.emp from public;
 revoke succeeded.
-example2:
+
+EXAMPLE:
+--------
 sql>conn scott/tiger;
 sql>revoke all on emp from hector;
-note:grant with option permission here not work until the parent grant revoke by grand parent revoke.
- ---------------------------------------------------------------------------------------------------------+
+
+note:
+------
+grant with option permission here not work until the parent grant revoke by grand parent revoke.
+
 example:                                                                                                  |
 sql>grant all on emp to hector grant with option;                                                         |
 sql>conn hector/oracle;                                                                                   |
@@ -813,52 +988,54 @@ sql>revoke all on emp to annie;[here it wil not work because of this user given 
 so revoke all on emp to hector then automatically annie user also effect]                                 |
 ----------------------------------------------------------------------------------------------------------+
 note:
-In oracle before we are giving create table system privileges to user then we must give UNLIMITED TABLESPACE
-system privilege to user otherwise oracle server returns error.
+IN ORACLE BEFORE WE ARE GIVING CREATE TABLE SYSTEM PRIVILEGES TO USER THEN WE MUST GIVE UNLIMITED TABLESPACE
+SYSTEM PRIVILEGE TO USER OTHERWISE ORACLE SERVER RETURNS ERROR.
 
-EXAMPLE:
-sql>conn sys as sysdba;
-sql>creat user u2 identified by u2;
-sql>grant connect to u2;
+        EXAMPLE:
+        --------
+        sql>conn sys as sysdba;
+        sql>creat user u2 identified by u2;
+        sql>grant connect to u2;
+        sql>conn u2/u2;
+        sql>create table h1(sno number(10)
+        Error:insufficent privileges.
+
+    sql>conn sys as sysdba;
+    sql>grant create table to u2;
+
+    sql>conn u2/u2;
+    sql>create table h2(sno number(10));
+    Error:01950 no privileges on tablespace 'users'
+
+         +------------------------------------------+
+         |  SOLUTION:-                              |
+         |  --------                                |
+         |  sql>conn sys as sysdba;                 |
+         |  sql>grant UNLIMTED TABLESPACE to u2;    |
+         +------------------------------------------+
+
 sql>conn u2/u2;
-sql>create table h1(sno number(10)
-Error:insufficent privileges.
 
-sql>conn sys as sysdba;
-sql>grant create table to u2;
-
-sql>conn u2/u2;
-sql>create table h2(sno number(10));
-Error:01950 no privileges on tablespace 'users'
-|-------------------------------------------------------------------------------------------------------+
-|But inthis case view is create without given any kind of error,but not materialized view because of    |
-|aterialized view storeing data but view does not]                                                      |
-+-------------------------------------------------------------------------------------------------------+
-|OLUTION:
-+---------
-
-sql>conn sys as sysdba;
-sql>grant UNLIMTED TABLESPACE to u2;
-|
-sql>conn u2/u2;
-|
 sql>create table h1(sno number(10));
-|
+
 table created.
-|
+
 In oracle if you want give object privilege on view to another user then we are using following syntax:
 SYNTAX:
 +-------
 grant objectprivileges on viewname to usernme1,username2,.....;
 
-**********************************************************************
+
+**********************************************************************************************************
+
+
 DBMS ARCHITECTURE(or)ansi/sparc architecture(or)3 level architecture:-
 ======================================================================
 
-Ansi[American national institute] has established Three level architecture for DBMS this architecture is,
+Ansi[American National Institute] has Established Three Level Architecture for DBMS This Architecture is,
 also called as ANSI/SPARC(standard planning and requirements commitee)
 
-ain objective of DBMS architecture to seprate users view of the database from the way physically how data,
+main objective of DBMS architecture to seprate users view of the database from the way physically how data,
 store within the database.
 
 DBMS architecture having Three level these are:
@@ -985,9 +1162,10 @@ In all relational databases view are used in following three purpose.
 3:Providing table level security
 
 Force view:
------------
-In oracle we can also create a view without having any base table these type of view are also called as.
-force view or forced view.
+===========
+
+IN ORACLE WE CAN ALSO CREATE A VIEW WITHOUT HAVING ANY BASE TABLE THESE TYPE OF VIEW ARE ALSO CALLED AS.
+FORCE VIEW OR FORCED VIEW.
 
 Syntax:
 create or replace force view viename as select * from anyname;
@@ -998,14 +1176,18 @@ sql>create table hyd(sno number(10),name varchar(10));
 sql>alter view v1 compile;
 sql>desc;
 
-with check option:
-------------------
-With check is an optional clause used along with where condition within views
-Generally if you view having with check optional then we are not allowed to insert other then where condition value through view to base table.
+WITH CHECK OPTION:
+=================
 
-Generally If you want provide constraint type mechanism on views then we are using with check optional 
-clause,
+WITH CHECK IS AN OPTIONAL CLAUSE USED ALONG WITH WHERE CONDITION WITHIN VIEWS
+GENERALLY IF YOU VIEW HAVING WITH CHECK OPTIONAL THEN WE ARE NOT ALLOWED TO INSERT OTHER THEN WHERE 
+CONDITION VALUE THROUGH VIEW TO BASE TABLE.
+
+GENERALLY IF YOU WANT PROVIDE CONSTRAINT TYPE MECHANISM ON VIEWS THEN WE ARE USING WITH CHECK OPTIONAL 
+CLAUSE.
+
 Syntax:
+-------
 create or replace view viewname as select * from tablename where condition with check option;
 
 EXAMPLE:
@@ -1017,10 +1199,11 @@ ERROR:VIEW WITH CHECK OPTION where-clause violation.
 
 sql>insert into v1(empno,ename,deptno)values(2,'abc',10);
 
-Read only views:
-----------------
-In oracle when view having read optional clause then we can not perform dml operation through view to base,
-table these type of view are also called read only views.
+READ ONLY VIEWS:
+===============
+
+IN ORACLE WHEN VIEW HAVING READ OPTIONAL CLAUSE THEN WE CAN NOT PERFORM DML OPERATION THROUGH VIEW TO BASE,
+TABLE THESE TYPE OF VIEW ARE ALSO CALLED READ ONLY VIEWS.
 
 syntax:
 create or replace view viewname as select * from tablename with read only;
@@ -1033,12 +1216,34 @@ TESTING:
 sql>delete from v3 where deptno=10;
 Error:cannot delete from view..
 
-In oracle we can also drop a view by using drop view viewname;
+IN ORACLE WE CAN ALSO DROP A VIEW BY USING DROP VIEW VIEWNAME;
 
- ---------------------------------------------------------------------------+
-sql>create table t1(sno number(10),name varchar(10),dname varchar(10));     |
-sql>insert into t1(sno,name)values(&sno,'&name');                           |
-                                                                            |
-Now you can insert using address operator except on column  also            |
-----------------------------------------------------------------------------+
+IN PLSQL IF YOU WANT TO FIND OUT LINE NUMBER WHERE EXCEPTION IS OCCURED IN PLSQL BLOCK THEN WE MUST
+USED FORMAT_ERROR_BACKTRACE() FROM DBMS_UTILITY PACKAGES BY USING FOLLOWING SYNTAX.
+THIS FUNCTION USED IN DEFAULT HANDLER UNDER EXCEPTION SECTION OF THE PLSQL BLOCK
 
+syntax:-
+--------
+formate_error_backtrace()
+Example:-
+--------
+sql>
+    declare
+    a number(10);
+    b number(10);
+    c number(10);
+    begin
+        a:=9;
+        b:=0;
+        c:=a/b;
+        dbms_output.put_line(c);
+        exception when others then
+            dbms_output.put_line(dbms_utility.format_error_backtrace());
+    end;
+    /
+output:-
+-------
+ORA-06512: at line 8
+
+Error trapping function(sqlcode,sqlerrm):
+========================================
