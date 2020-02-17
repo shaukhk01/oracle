@@ -1,0 +1,81 @@
+                                    CLUSTER
+                                    =======
+Cluster is a database object which contain group of table together and it shares same data block
+Generally cluster are used to improve performance of the join that's why cluster are created by that's why
+cluster are created by database administrator only.
+
+Generally cluster tables must have a common column name this common column is also called as cluster key.
+
+In all relational databases when ever we are submitting inner join or outer join then database server first,
+check from clause tables are available cluster or not
+When ever those table are available in cluster then database server very fastly retrieve data from cluster,
+table
+
+Generally in all relational database cluster are created at the time of table creation 
+In oracle we are creating cluster by using flowing three step process.
+
+step1:-create a cluster.
+
+step2:-create an index on cluster.
+
+step3:-create actual tables.
+
+
+step1:-create a cluster:-
+       ================
+       In oracle we are creating cluster based on common column name this common column is also called as 
+       cluster key 
+Syntax:-
+------
+create cluster clustername(commmoncolname datatype(size));
+
+
+step2:-create an index on cluster:-
+       ========================== 
+Syntax:-
+------
+create index indexname on cluster clustername;
+
+step3:-create actual tables:-
+       ==================== 
+syntax:-
+------
+create table tablename(col1 datatype(size),col2 datatype(size),.....)cluster clustername(commoncolname);
+
+Example:-
+--------
+sql>create cluster emp_dept(deptno numbr(10));
+sql>create index abcd on cluster emp_dept;
+
+sql>create table e1(empno number(10),ename varchar(10),sal number(10),deptno number(10))cluster emp_dept(deptno);
+
+sql>create table d1(deptno number(10),dname varchar2(10),loc varchar2(10)) cluster emp_dept(deptno);
+
+sql>desc e1;
+sql>desc d1;
+
+note:
+----
+Generally cluster table having same rowid.
+Example:-
+-------
+sql>insert into e1 values(1,'abc',2000,10);
+
+sql>select * from e1;
+
+| EMPNO | ENAME | SAL  | DEPTNO |
+|-------+-------+------+--------|
+| 1     | abc   | 2000 | 10     |
+
+sql>insert into d1 values(10,'sw','hyd');
+
+sql>select * from d1;
+
+| DEPTNO | DNAME | LOC |
+|--------+-------+-----|
+| 10     | SW    | HYD |
+
+sql>select rowidfrom e1;
+sql>select rowid from d1;
+
+(here these rowids are same)
